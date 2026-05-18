@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="sr" class="scroll-smooth scroll-pt-24 overflow-x-hidden">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Velbi | Tvoje gorivo. Svaki dan.</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap');
+        body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+        
+        /* Prilagođene boje na osnovu Velbi ambalaže */
+        .velbi-gold { color: #C49A45; }
+        .bg-velbi-gold { background-color: #C49A45; }
+        .border-velbi-gold { border-color: #C49A45; }
+        .hover-velbi-gold:hover { background-color: #B38A36; }
+        
+        .velbi-black { background-color: #111111; }
+        .velbi-cream { background-color: #F8F6F0; }
+        
+        .hero-gradient { background: linear-gradient(135deg, #F8F6F0 0%, #EAE5D9 100%); }
+        
+        /* Mekani svetlosni krugovi za pozadinu */
+        .blur-orb-gold {
+            background: radial-gradient(circle, rgba(196,154,69,0.15) 0%, rgba(196,154,69,0) 70%);
+        }
+    </style>
+</head>
+<body class="bg-[#FCFBFA] text-gray-900 relative overflow-x-hidden">
+
+    <nav class="fixed w-full top-0 bg-white/90 backdrop-blur-md z-50 border-b border-gray-200">
+        <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center text-sm font-medium">
+            <a href="#" class="block">
+                <img src="velbi-logo.png" alt="Velbi Logo" class="h-16 md:h-20 object-contain" onerror="this.outerHTML='<span class=\'text-3xl font-black tracking-tighter text-[#111]\'>Velbi.</span>'">
+            </a>
+            
+            <div class="hidden md:flex space-x-8 text-gray-500">
+                <a href="#sastojci" class="hover:text-[#C49A45] transition">Sastojci</a>
+                <a href="#kome-je-namenjeno" class="hover:text-[#C49A45] transition">Za koga</a>
+                <a href="#naruci" class="hover:text-[#C49A45] transition">Naruči</a>
+            </div>
+            <button onclick="openModal()" class="bg-[#111] text-white px-6 py-2.5 rounded-full hover:bg-gray-800 transition shadow-md border border-[#111] font-semibold cursor-pointer">Naruči odmah</button>
+        </div>
+    </nav>
+
+    <div id="orderModal" class="fixed inset-0 z-[100] flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300 opacity-0" id="modalBackdrop" onclick="closeModal()"></div>
+        
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg p-8 mx-4 transform scale-95 opacity-0 transition-all duration-300 relative z-10" id="modalContent">
+            <button onclick="closeModal()" class="absolute top-6 right-6 text-gray-400 hover:text-gray-900 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            
+            <div id="formContainer">
+                <h2 class="text-3xl font-bold mb-2 text-[#111]">Tvoja narudžbina.</h2>
+                <p class="text-gray-500 mb-8 text-sm">Popuni podatke ispod i tvoj Velbi uskoro stiže na adresu.</p>
+                
+                <form id="orderForm" class="space-y-5" onsubmit="submitForm(event)">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Ime i prezime</label>
+                        <input type="text" required class="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-[#C49A45] focus:border-[#C49A45] block p-3.5 outline-none transition" placeholder="Petar Petrović">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Broj telefona</label>
+                        <input type="tel" required class="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-[#C49A45] focus:border-[#C49A45] block p-3.5 outline-none transition" placeholder="06x xxx xxxx">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Adresa i grad za dostavu</label>
+                        <input type="text" required class="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-[#C49A45] focus:border-[#C49A45] block p-3.5 outline-none transition" placeholder="Kneza Mihaila 1, Beograd">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Koji paket želiš?</label>
+                        <select required class="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-[#C49A45] focus:border-[#C49A45] block p-3.5 outline-none transition cursor-pointer">
+                            <option value="">Izaberi opciju...</option>
+                            <option value="1_crna">1 Kesica (Tamna čokolada) - 420 din</option>
+                            <option value="1_bela">1 Kesica (Bela čokolada) - 420 din</option>
+                            <option value="6_paket">Paket od 6 kesica (Mix) - 2.390 din</option>
+                            <option value="12_paket">Paket od 12 kesica (Mix) - 4.790 din</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="w-full bg-[#111] text-white font-bold text-lg py-4 rounded-xl hover:bg-gray-800 transition shadow-lg mt-4">Završi narudžbinu</button>
+                </form>
+            </div>
+
+            <div id="successMessage" class="hidden text-center py-10">
+                <div class="w-20 h-20 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+                <h2 class="text-3xl font-bold mb-2 text-[#111]">Hvala Vam!</h2>
+                <p class="text-gray-500 mb-8">Vaša narudžbina je uspešno primljena. Velbi uskoro kreće ka vama!</p>
+                <button onclick="closeModal()" class="bg-gray-100 text-[#111] font-bold py-3 px-8 rounded-full hover:bg-gray-200 transition">Zatvori</button>
+            </div>
+        </div>
+    </div>
+
+    <section class="pt-48 pb-32 text-center px-6 relative overflow-hidden bg-[#FCFBFA]">
+        <div class="absolute top-[-20%] left-[-10%] w-[50rem] h-[50rem] blur-orb-gold rounded-full pointer-events-none"></div>
+        <div class="absolute bottom-[-10%] right-[-5%] w-[40rem] h-[40rem] blur-orb-gold rounded-full pointer-events-none opacity-50"></div>
+        
+        <img src="velbi-logo.png" alt="" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[180%] md:w-[110%] opacity-[0.20] pointer-events-none object-contain mix-blend-multiply" onerror="this.style.display='none'">
+        
+        <div class="max-w-4xl mx-auto relative z-10">
+            <h1 class="text-6xl md:text-8xl font-extrabold tracking-tight mb-6 leading-tight text-[#111]">
+                Ukus koji voliš.<br>
+                <span class="velbi-gold">Telo koje jačaš.</span>
+            </h1>
+            <p class="text-xl md:text-2xl text-gray-600 font-light mb-10 leading-relaxed max-w-3xl mx-auto">
+                Velbi proteinske kuglice su prelivene belgijskom crnom ili belom čokoladom sa 60% kakaa — a unutra: urme, Isolate whey protein, pahuljice, kikiriki puter i kolagen.
+            </p>
+            <a href="#naruci" class="inline-block bg-velbi-gold text-white font-bold text-lg px-8 py-4 rounded-full hover-velbi-gold hover:scale-105 transition transform duration-300 shadow-xl shadow-[#C49A45]/30">Poruči svoj Velbi</a>
+        </div>
+    </section>
+
+    <section class="flex flex-col md:flex-row w-full border-y border-gray-200">
+        <div class="w-full md:w-1/2 velbi-black text-white p-16 md:p-24 flex flex-col justify-center items-center text-center relative overflow-hidden">
+            <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.03]">
+                <span class="text-[15rem] font-black leading-none">CRNA</span>
+            </div>
+            <h2 class="text-4xl font-bold mb-4 relative z-10">Tamna čokolada</h2>
+            <div class="w-16 h-1 bg-velbi-gold mb-6 rounded-full relative z-10"></div>
+            <p class="text-gray-400 text-lg max-w-sm relative z-10">Premium belgijska čokolada sa 60% kakaa koja se topi u ustima. Nije glazura, nije imitacija — pravi čokoladni preliv.</p>
+        </div>
+        <div class="w-full md:w-1/2 velbi-cream text-[#111] p-16 md:p-24 flex flex-col justify-center items-center text-center relative overflow-hidden">
+             <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.04]">
+                <span class="text-[15rem] font-black leading-none">BELA</span>
+            </div>
+            <h2 class="text-4xl font-bold mb-4 relative z-10">Bela čokolada</h2>
+            <div class="w-16 h-1 bg-velbi-gold mb-6 rounded-full relative z-10"></div>
+            <p class="text-gray-600 text-lg max-w-sm relative z-10">Iste zdrave kuglice, dva različita čokoladna doživljaja. Slatkiš bez kompromisa za ljubitelje bogatog, kremastog ukusa.</p>
+        </div>
+    </section>
+
+    <section id="sastojci" class="py-24 px-6 max-w-6xl mx-auto relative">
+        <div class="text-center mb-16 max-w-3xl mx-auto">
+            <h2 class="text-4xl font-bold tracking-tight mb-6 text-[#111]">Slatkiš koji radi za tvoje telo.</h2>
+            <p class="text-xl text-gray-600">Proteinske kuglice su dokaz da nešto može da bude i ukusno i zdravo. Čokoladni preliv spolja, superhrana iznutra.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white p-10 rounded-3xl shadow-sm border border-gray-200 relative overflow-hidden transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl group">
+                <div class="absolute -right-10 -bottom-10 text-[10rem] font-black text-gray-100 opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none leading-none">100%</div>
+                <h3 class="text-2xl font-bold mb-3 text-[#111] relative z-10">Prirodni sastojci, ručna izrada.</h3>
+                <p class="text-gray-600 text-lg relative z-10">Svaki Velbi je napravljen ručno, bez veštačkih boja i aroma. Bez dodatog šećera — samo čista priroda u svakom zalogaju.</p>
+            </div>
+            <div class="velbi-cream p-10 rounded-3xl shadow-sm border border-[#EAE5D9] relative overflow-hidden transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl group">
+                <div class="absolute -right-4 -top-8 text-[12rem] font-black text-[#EAE5D9] opacity-50 group-hover:scale-110 transition-transform duration-700 pointer-events-none leading-none">⚡</div>
+                <h3 class="text-2xl font-bold mb-3 text-[#111] relative z-10">Dugotrajna energija.</h3>
+                <p class="text-gray-600 text-lg relative z-10">Urme i pahuljice obezbeđuju prirodne ugljene hidrate koji oslobađaju energiju polako — bez naglih padova šećera u krvi.</p>
+            </div>
+            <div class="velbi-cream p-10 rounded-3xl shadow-sm border border-[#EAE5D9] relative overflow-hidden transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl group">
+                <div class="absolute -left-10 -bottom-4 text-[10rem] font-black text-[#EAE5D9] opacity-70 group-hover:scale-110 transition-transform duration-700 pointer-events-none leading-none">15g</div>
+                <h3 class="text-2xl font-bold mb-3 text-[#111] relative z-10 ml-8 md:ml-24">Bogato proteinima i kolagenom.</h3>
+                <p class="text-gray-600 text-lg relative z-10 ml-8 md:ml-24">Whey protein za mišiće, kolagen za kožu i zglobove. Sve u jednoj kuglici. Nikad nije bilo lakše unositi ono što trebaš.</p>
+            </div>
+            <div class="bg-white p-10 rounded-3xl shadow-sm border border-gray-200 relative overflow-hidden transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl group">
+                <div class="absolute -right-6 -bottom-6 text-[10rem] font-black text-gray-100 opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none leading-none">60%</div>
+                <h3 class="text-2xl font-bold mb-3 text-[#111] relative z-10">Belgijska čokolada.</h3>
+                <p class="text-gray-600 text-lg relative z-10 pr-12">Nije glazura, nije imitacija — pravi belgijski čokoladni preliv koji se topi u ustima. Crna ili bela varijanta, oba od premium kakaa.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="kome-je-namenjeno" class="py-24 px-6 bg-gray-50 border-y border-gray-200 relative overflow-hidden">
+        <img src="velbi-logo.png" alt="" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[200%] md:w-[130%] opacity-[0.15] pointer-events-none object-contain" onerror="this.style.display='none'">
+        
+        <div class="max-w-6xl mx-auto relative z-10">
+            <div class="text-center mb-16 max-w-3xl mx-auto">
+                <h2 class="text-4xl md:text-5xl font-bold tracking-tight mb-6 text-[#111]">Za sve koji vole nešto slatko i zdravo.</h2>
+                <p class="text-xl text-gray-600">Velbi nema target grupu — ima svakoga ko ceni pravi ukus i prirodne sastojke.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-sm border border-gray-100 transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:border-[#C49A45] cursor-default">
+                    <h4 class="text-xl font-bold velbi-gold mb-4">Sportisti</h4>
+                    <p class="text-gray-600 leading-relaxed">Idealan međuobrok pre ili posle treninga. Brzi proteini, kolagen za regeneraciju, energija iz urmi.</p>
+                </div>
+                <div class="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-sm border border-gray-100 transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:border-[#C49A45] cursor-default">
+                    <h4 class="text-xl font-bold velbi-gold mb-4">Zaposleni</h4>
+                    <p class="text-gray-600 leading-relaxed">Kad nema vremena za zdrav obrok — Velbi u tašni je uvek spreman. Energija bez pada koncentracije.</p>
+                </div>
+                <div class="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-sm border border-gray-100 transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:border-[#C49A45] cursor-default">
+                    <h4 class="text-xl font-bold velbi-gold mb-4">Porodice</h4>
+                    <p class="text-gray-600 leading-relaxed">Deca obožavaju čokoladni preliv, roditelji vole što znaju šta je unutra. Pobeda za celu porodicu.</p>
+                </div>
+                <div class="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-sm border border-gray-100 transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:border-[#C49A45] cursor-default">
+                    <h4 class="text-xl font-bold velbi-gold mb-4">Studenti</h4>
+                    <p class="text-gray-600 leading-relaxed">Prirodni šećeri iz urmi i zdrave masti daju mozgu gorivo za bolju koncentraciju, fokus i energiju tokom učenja — bez kofeina i bez pada.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-24 px-6 max-w-5xl mx-auto text-center relative">
+        <h2 class="text-4xl font-bold tracking-tight mb-6 text-[#111]">Tvoje gorivo. Svaki dan.</h2>
+        <p class="text-lg text-gray-600 mb-12 max-w-2xl mx-auto">Bez obzira da li ideš na trening, u školu, na posao ili se samo opuštaš — Velbi daje telu ono što mu treba da funkcioniše na najbolji mogući način.</p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+            <div class="p-8 bg-white rounded-2xl shadow-sm border border-gray-200 flex items-start space-x-5 transform transition-all duration-300 hover:-translate-y-2 hover:shadow-lg hover:border-[#EAE5D9]">
+                <div class="velbi-cream text-2xl p-3 rounded-full text-[#C49A45]">🏃</div>
+                <div>
+                    <div class="font-bold text-lg mb-2 text-[#111]">Pre treninga</div>
+                    <div class="text-gray-600">Energija iz urmi i pahuljica za bolji performans tokom vežbanja.</div>
+                </div>
+            </div>
+            <div class="p-8 bg-white rounded-2xl shadow-sm border border-gray-200 flex items-start space-x-5 transform transition-all duration-300 hover:-translate-y-2 hover:shadow-lg hover:border-[#EAE5D9]">
+                <div class="velbi-cream text-2xl p-3 rounded-full text-[#C49A45]">💪</div>
+                <div>
+                    <div class="font-bold text-lg mb-2 text-[#111]">Posle treninga</div>
+                    <div class="text-gray-600">Isolate Whey protein i kolagen ubrzavaju regeneraciju mišića i tkiva.</div>
+                </div>
+            </div>
+            <div class="p-8 bg-white rounded-2xl shadow-sm border border-gray-200 flex items-start space-x-5 transform transition-all duration-300 hover:-translate-y-2 hover:shadow-lg hover:border-[#EAE5D9]">
+                <div class="velbi-cream text-2xl p-3 rounded-full text-[#C49A45]">🧠</div>
+                <div>
+                    <div class="font-bold text-lg mb-2 text-[#111]">Tokom dana</div>
+                    <div class="text-gray-600">Zdrave masti kikiriki putera drže mozak koncentrisanim satima.</div>
+                </div>
+            </div>
+            <div class="p-8 bg-white rounded-2xl shadow-sm border border-gray-200 flex items-start space-x-5 transform transition-all duration-300 hover:-translate-y-2 hover:shadow-lg hover:border-[#EAE5D9]">
+                <div class="velbi-cream text-2xl p-3 rounded-full text-[#C49A45]">🌙</div>
+                <div>
+                    <div class="font-bold text-lg mb-2 text-[#111]">Kao večernji slatkiš</div>
+                    <div class="text-gray-600">Čokoladni ukus bez kajanja — savršena zamena za klasičnu čokoladu.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="naruci" class="py-24 px-6 velbi-black text-white text-center relative overflow-hidden">
+        <div class="absolute top-[-20%] left-[20%] w-[60rem] h-[60rem] blur-orb-gold rounded-full pointer-events-none opacity-30"></div>
+        
+        <div class="max-w-6xl mx-auto relative z-10">
+            <h2 class="text-5xl font-bold tracking-tight mb-6">Naruči proteinske kuglice danas.</h2>
+            <p class="text-xl text-gray-400 mb-16">Sveže napravljene, dostavljeno do tvojih vrata za 2–3 radna dana.</p>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 group mb-24">
+                
+                <div class="bg-white text-gray-900 rounded-3xl p-8 shadow-xl flex flex-col items-center text-center transform transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
+                    <div class="w-full h-56 bg-gray-50 rounded-2xl mb-6 flex items-center justify-center border border-gray-200 overflow-hidden relative">
+                        <img src="1.png" alt="Velbi 1 Kesica" class="w-full h-full object-cover object-center transition-transform duration-500 hover:scale-110">
+                    </div>
+                    
+                    <h3 class="text-2xl font-bold mb-2">1 Kesica</h3>
+                    <p class="text-gray-500 mb-6 flex-grow">80g • 4 kuglice<br>Biraš: Tamna ili bela čokolada.</p>
+                    
+                    <div class="text-4xl font-bold mb-1 text-gray-900">420 <span class="text-xl font-semibold">din</span></div>
+                    <div class="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-8">+ cena dostave</div>
+                    
+                    <button onclick="openModal()" class="w-full border-2 border-[#111] text-[#111] font-bold text-lg py-4 rounded-xl hover:bg-gray-50 transition cursor-pointer">Dodaj u korpu</button>
+                </div>
+
+                <div class="bg-white text-gray-900 rounded-3xl p-8 shadow-2xl flex flex-col items-center text-center border-2 border-velbi-gold relative transform transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-[#B38A36] lg:scale-105 z-10">
+                    <div class="absolute top-0 right-10 bg-velbi-gold text-white text-xs font-bold px-4 py-1.5 rounded-b-lg tracking-wider z-20">PREPORUKA</div>
+                    
+                    <div class="w-full h-56 velbi-cream rounded-2xl mb-6 flex items-center justify-center border border-[#EAE5D9] overflow-hidden relative">
+                        <img src="2.png" alt="Velbi Paket 6 kesica" class="w-full h-full object-cover object-center transition-transform duration-500 hover:scale-110">
+                    </div>
+                    
+                    <h3 class="text-2xl font-bold mb-2">Paket od 6 kesica</h3>
+                    <p class="text-gray-500 mb-6 flex-grow">3 crne + 3 bele čokolade.<br>Ukupno 24 proteinske kuglice.</p>
+                    
+                    <div class="text-4xl font-bold mb-1 text-gray-900">2.390 <span class="text-xl font-semibold">din</span></div>
+                    <div class="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-8">+ cena dostave</div>
+                    
+                    <button onclick="openModal()" class="w-full bg-velbi-gold text-white font-bold text-lg py-4 rounded-xl hover-velbi-gold transition shadow-lg shadow-[#C49A45]/20 cursor-pointer">Dodaj paket u korpu</button>
+                </div>
+
+                <div class="bg-white text-gray-900 rounded-3xl p-8 shadow-xl flex flex-col items-center text-center transform transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
+                    <div class="w-full h-56 bg-gray-50 rounded-2xl mb-6 flex items-center justify-center border border-gray-200 overflow-hidden relative">
+                         <img src="3.png" alt="Velbi Paket 12 kesica" class="w-full h-full object-cover object-center transition-transform duration-500 hover:scale-110">
+                    </div>
+                    
+                    <h3 class="text-2xl font-bold mb-2">Paket od 12 kesica</h3>
+                    <p class="text-gray-500 mb-6 flex-grow">6 crnih + 6 belih čokolada.<br>Zaliha od 48 kuglica.</p>
+                    
+                    <div class="text-4xl font-bold mb-1 text-gray-900">4.790 <span class="text-xl font-semibold">din</span></div>
+                    <div class="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-8">+ cena dostave</div>
+                    
+                    <button onclick="openModal()" class="w-full border-2 border-[#111] text-[#111] font-bold text-lg py-4 rounded-xl hover:bg-gray-50 transition cursor-pointer">Dodaj u korpu</button>
+                </div>
+
+            </div>
+            
+        </div>
+    </section>
+
+    <footer class="py-16 velbi-black border-t border-gray-900 text-center text-gray-400 text-sm flex flex-col items-center relative z-10">
+        <h3 class="text-2xl font-bold text-white mb-6">Prati našu priču.</h3>
+        
+        <div class="flex space-x-6 mb-12">
+            <a href="https://www.instagram.com/__velbi__" target="_blank" class="w-14 h-14 rounded-full bg-gray-900 border border-gray-800 flex items-center justify-center text-gray-300 hover:bg-velbi-gold hover:border-velbi-gold hover:text-white transition-all duration-300 transform hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(196,154,69,0.3)]">
+                <svg fill="currentColor" viewBox="0 0 24 24" class="w-6 h-6">
+                    <path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clip-rule="evenodd" />
+                </svg>
+            </a>
+            <a href="https://www.tiktok.com/@_velbi" target="_blank" class="w-14 h-14 rounded-full bg-gray-900 border border-gray-800 flex items-center justify-center text-gray-300 hover:bg-velbi-gold hover:border-velbi-gold hover:text-white transition-all duration-300 transform hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(196,154,69,0.3)]">
+                <svg viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+                </svg>
+            </a>
+        </div>
+        
+        <p class="text-3xl font-black text-white mb-4 tracking-tighter">Velbi.</p>
+        <p>&copy; 2026 Sva prava zadržana.</p>
+    </footer>
+
+    <script>
+        const modal = document.getElementById('orderModal');
+        const modalBackdrop = document.getElementById('modalBackdrop');
+        const modalContent = document.getElementById('modalContent');
+        const formContainer = document.getElementById('formContainer');
+        const successMessage = document.getElementById('successMessage');
+        const orderForm = document.getElementById('orderForm');
+
+        function openModal() {
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modalBackdrop.classList.remove('opacity-0');
+                modalContent.classList.remove('scale-95', 'opacity-0');
+            }, 10);
+            formContainer.classList.remove('hidden');
+            successMessage.classList.add('hidden');
+            orderForm.reset();
+        }
+
+        function closeModal() {
+            modalBackdrop.classList.add('opacity-0');
+            modalContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        function submitForm(event) {
+            event.preventDefault(); 
+            formContainer.classList.add('hidden');
+            successMessage.classList.remove('hidden');
+        }
+    </script>
+
+</body>
+</html>
