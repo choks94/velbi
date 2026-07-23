@@ -1146,14 +1146,70 @@
         formContainer.classList.remove('hidden');
         successMessage.classList.add('hidden');
         orderForm.reset();
+        clearAllErrors();
     }
     function closeModal() {
         modalBackdrop.classList.add('opacity-0');
         modalContent.classList.add('scale-95', 'opacity-0');
         setTimeout(() => modal.classList.add('hidden'), 300);
     }
+    /* ── Validation ── */
+    function showErr(input, msg) {
+        input.style.border = '1px solid #c0392b';
+        let el = input.parentNode.querySelector('.field-error');
+        if (!el) {
+            el = document.createElement('p');
+            el.className = 'field-error';
+            el.style.cssText = 'color:#c0392b;font-size:12px;margin-top:5px;';
+            input.parentNode.appendChild(el);
+        }
+        el.textContent = msg;
+    }
+    function clearErr(input) {
+        input.style.border = '1px solid #E8D5C4';
+        const el = input.parentNode.querySelector('.field-error');
+        if (el) el.remove();
+    }
+    function clearAllErrors() {
+        orderForm.querySelectorAll('.field-error').forEach(el => el.remove());
+        orderForm.querySelectorAll('input, select').forEach(el => {
+            el.style.border = '1px solid #E8D5C4';
+        });
+    }
+    function validateForm() {
+        const name    = orderForm.querySelector('[name="Ime i prezime"]');
+        const phone   = orderForm.querySelector('[name="Telefon"]');
+        const email   = orderForm.querySelector('[name="email"]');
+        const address = orderForm.querySelector('[name="Adresa"]');
+        let ok = true;
+
+        const words = name.value.trim().split(/\s+/);
+        if (words.length < 2 || words.some(w => w.length < 2)) {
+            showErr(name, 'Unesite ime i prezime (npr. Petar Petrović)'); ok = false;
+        } else { clearErr(name); }
+
+        const digits = phone.value.replace(/[\s\-\(\)]/g, '');
+        if (!/^(\+3816\d|06\d)\d{6,7}$/.test(digits)) {
+            showErr(phone, 'Unesite ispravan broj (npr. 063 123 4567)'); ok = false;
+        } else { clearErr(phone); }
+
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.value.trim())) {
+            showErr(email, 'Unesite ispravnu email adresu (npr. ime@gmail.com)'); ok = false;
+        } else { clearErr(email); }
+
+        if (address.value.trim().length < 10) {
+            showErr(address, 'Unesite punu adresu sa gradom (npr. Kneza Mihaila 1, Beograd)'); ok = false;
+        } else { clearErr(address); }
+
+        return ok;
+    }
+    ['[name="Ime i prezime"]', '[name="Telefon"]', '[name="email"]', '[name="Adresa"]'].forEach(sel => {
+        orderForm.querySelector(sel).addEventListener('input', function () { clearErr(this); });
+    });
+
     async function submitForm(e) {
         e.preventDefault();
+        if (!validateForm()) return;
         const form = e.target;
         const btn  = document.getElementById('submitBtn');
         btn.disabled    = true;
@@ -1172,7 +1228,7 @@
         data.append('_template',     'table');
 
         try {
-            const res  = await fetch('https://formsubmit.co/ajax/scolic994@gmail.com', {
+            const res  = await fetch('https://formsubmit.co/ajax/velbipro@gmail.com', {
                 method: 'POST',
                 body:   data
             });
