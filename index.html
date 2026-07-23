@@ -566,11 +566,8 @@
             <h2 class="text-3xl font-bold mb-2" style="color:#2C1A0E;">Tvoja narudžbina.</h2>
             <p class="text-sm mb-8" style="color:#7a5c4a;">Popuni podatke ispod i tvoj Velbi uskoro stiže na adresu.</p>
             <form id="orderForm" class="space-y-5" onsubmit="submitForm(event)">
-                <!-- Web3Forms config — replace value with your key from https://web3forms.com -->
-                <input type="hidden" name="access_key" value="ZAMENI_SA_TVOJIM_KLJUCEM">
-                <input type="hidden" name="subject" value="Nova narudžbina — Velbi">
-                <input type="hidden" name="from_name" value="Velbi narudžbina">
-                <input type="checkbox" name="botcheck" style="display:none;">
+                <!-- Honeypot — spam bots fill this, real users don't -->
+                <input type="text" name="_honey" style="display:none;">
                 <div>
                     <label class="block text-sm font-semibold mb-1" style="color:#2C1A0E;">Ime i prezime</label>
                     <input type="text" name="Ime i prezime" required placeholder="Petar Petrović"
@@ -1162,15 +1159,22 @@
         btn.disabled    = true;
         btn.textContent = 'Šaljem...';
 
-        const data = Object.fromEntries(new FormData(form));
-        data.replyto = data.email;
-        data.cc      = data.email;
+        const raw  = new FormData(form);
+        const data = new FormData();
+        data.append('Ime i prezime', raw.get('Ime i prezime'));
+        data.append('Telefon',       raw.get('Telefon'));
+        data.append('Email kupca',   raw.get('email'));
+        data.append('Adresa',        raw.get('Adresa'));
+        data.append('Paket',         raw.get('Paket'));
+        data.append('_subject',      'Nova narudžbina — Velbi');
+        data.append('_cc',           raw.get('email'));
+        data.append('_captcha',      'false');
+        data.append('_template',     'table');
 
         try {
-            const res  = await fetch('https://api.web3forms.com/submit', {
-                method:  'POST',
-                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                body:    JSON.stringify(data)
+            const res  = await fetch('https://formsubmit.co/ajax/scolic994@gmail.com', {
+                method: 'POST',
+                body:   data
             });
             const json = await res.json();
             if (json.success) {
