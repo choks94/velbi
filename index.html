@@ -19,6 +19,8 @@
         html {
             overflow-y: scroll;
             overflow-x: hidden;
+            scroll-behavior: smooth;
+            scroll-padding-top: 88px;
         }
 
         body {
@@ -61,7 +63,7 @@
             transition: color .15s;
         }
         #mobileMenu a:last-child { border-bottom: none; }
-        #mobileMenu a:hover, #mobileMenu a.active-link { color: #B5651D; }
+        #mobileMenu a:hover, #mobileMenu a.active-link { color: #C49A3C; }
 
         /* ── Mobile section padding reduction ── */
         @media (max-width: 767px) {
@@ -110,7 +112,7 @@
         /* ── Buttons ── */
         .btn-caramel {
             display: inline-block;
-            background-color: #B5651D;
+            background-color: #C49A3C;
             color: #fff;
             border-radius: 50px;
             padding: 16px 40px;
@@ -166,22 +168,14 @@
         }
         .card:hover { transform: translateY(-4px); box-shadow: 0 14px 44px rgba(44,26,14,.14); }
 
-        /* ── Horizontal scroll panels ── */
+        /* ── Panels: single-column stack on mobile, grid on desktop ── */
         .panels {
-            display: flex;
+            display: grid;
+            grid-template-columns: 1fr;
             gap: 1.25rem;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-            /* bleed past padding so first card touches edge */
-            padding: 0 1.5rem 1.25rem;
-            margin: 0 -1.5rem;
         }
-        .panels::-webkit-scrollbar { display: none; }
         .panel-card {
-            flex: 0 0 min(300px, 78vw);
-            scroll-snap-align: start;
+            width: 100%;
         }
         /* Desktop: switch to grid */
         @media (min-width: 768px) {
@@ -233,8 +227,8 @@
         /* ── Product card ribbon ── */
         .ribbon {
             position: absolute;
-            top: 0; right: 28px;
-            background: #B5651D;
+            top: 0; left: 28px;
+            background: #C49A3C;
             color: #fff;
             font-size: 11px;
             font-weight: 700;
@@ -256,8 +250,8 @@
             transition: all .3s;
         }
         .social-icon:hover {
-            background: #B5651D;
-            border-color: #B5651D;
+            background: #C49A3C;
+            border-color: #C49A3C;
             color: #fff;
             transform: translateY(-3px);
             box-shadow: 0 0 22px rgba(181,101,29,.35);
@@ -269,28 +263,18 @@
             font-weight: 600;
             letter-spacing: .20em;
             text-transform: uppercase;
-            color: #B5651D;
+            color: #C49A3C;
             font-family: 'DM Sans', sans-serif;
         }
 
                 /* COLLAGEN SECTION */
         .collagen-section {
             padding: 80px 24px;
-            background: var(--warm-white, #FFF9F4);
+            background: #FAF6F1;
             text-align: center;
         }
         @media (min-width: 768px) {
             .collagen-section { padding: 100px 40px; }
-        }
-
-        .section-tag {
-            display: inline-block;
-            font-size: 11px;
-            font-weight: 600;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: #B5651D;
-            margin-bottom: 14px;
         }
 
         .section-title {
@@ -311,27 +295,19 @@
             line-height: 1.7;
         }
 
-        /* ── Collagen cards: horizontal scroll on mobile, 4-col grid on desktop ── */
+        /* ── Collagen cards: 2-col grid on mobile, 4-col grid on desktop ── */
         .collagen-cards {
-            display: flex;
-            gap: 16px;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-            padding: 4px 24px 16px;
-            margin: 0 -24px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
             text-align: left;
         }
-        .collagen-cards::-webkit-scrollbar { display: none; }
 
         .collagen-card {
-            flex: 0 0 min(280px, 78vw);
-            scroll-snap-align: start;
             background: #FAF6F1;
             border: 1px solid rgba(181,101,29,0.14);
             border-radius: 20px;
-            padding: 28px 22px;
+            padding: 22px 16px;
             text-align: left;
             transition: all 0.3s ease;
             position: relative;
@@ -361,7 +337,7 @@
             position: absolute;
             top: 0; left: 0; right: 0;
             height: 2px;
-            background: linear-gradient(90deg, #B5651D, #D4A5A0);
+            background: linear-gradient(90deg, #C49A3C, #D4A5A0);
             transform: scaleX(0);
             transition: transform 0.3s;
         }
@@ -390,6 +366,149 @@
             line-height: 1.65;
             font-weight: 300;
         }
+
+        /* ── Reveal animation ── */
+        .reveal {
+            opacity: 0;
+            transform: translateY(22px);
+            transition: opacity .55s ease, transform .55s ease;
+        }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+
+        /* ════════════════ PAGE HERO (Saznaj više) ════════════════ */
+        .page-hero {
+            position: relative;
+            padding: 140px 24px 90px;
+            text-align: center;
+            overflow: hidden;
+            background: #2C1A0E;
+        }
+        .page-hero-bg { position: absolute; inset: 0; pointer-events: none; }
+        .page-hero-bg img {
+            width: 100%; height: 100%;
+            object-fit: cover; object-position: center;
+            opacity: .30;
+        }
+        .page-hero-gradient {
+            position: absolute; inset: 0;
+            background: linear-gradient(135deg,rgba(44,26,14,0.92) 0%,rgba(92,51,23,0.55) 100%);
+        }
+        .page-hero-logo {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%,-50%);
+            width: 130%; opacity: .18;
+            mix-blend-mode: screen;
+            pointer-events: none;
+        }
+        .page-hero-inner { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; }
+        .ph-tag {
+            display: block; font-size: 11px; font-weight: 700; letter-spacing: .22em;
+            text-transform: uppercase; color: #D4A5A0;
+            font-family: 'DM Sans',sans-serif; margin-bottom: 18px;
+        }
+        .page-hero h1 {
+            font-size: clamp(34px,6vw,62px);
+            color: #FFF9F4; letter-spacing: -.02em; line-height: 1.15; margin-bottom: 18px;
+        }
+        .page-hero p { font-size: 18px; color: rgba(255,249,244,.65); line-height: 1.7; }
+
+        /* Ingredients grid */
+        .sastojci-grid {
+            display: grid; gap: 16px;
+            grid-template-columns: repeat(auto-fill, minmax(min(280px,100%), 1fr));
+        }
+        @media (min-width: 600px) { .sastojci-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 1000px) { .sastojci-grid { grid-template-columns: repeat(5, 1fr); } }
+
+        .sastojak-card {
+            background: #FFF9F4; border: 1px solid #E8D5C4; border-radius: 18px;
+            padding: 24px; transition: transform .25s, box-shadow .25s;
+        }
+        .sastojak-card:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(44,26,14,.12); }
+        .highlight-card { background: #2C1A0E; border-color: #2C1A0E; }
+        .highlight-card .sa-name { color: #FFF9F4; }
+        .highlight-card .sa-role { color: #D4A5A0; }
+        .highlight-card .sa-desc { color: rgba(255,249,244,.72); }
+        .highlight-card .sa-tag { background: rgba(196,154,60,.22); color: #D4A5A0; border-color: rgba(196,154,60,.35); }
+
+        .sa-icon { font-size: 32px; margin-bottom: 14px; display: block; line-height: 1; }
+        .sa-name { font-family: 'Playfair Display',serif; font-size: 19px; font-weight: 700; color: #2C1A0E; margin-bottom: 4px; }
+        .sa-role { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .10em; color: #C49A3C; margin-bottom: 12px; }
+        .sa-desc { font-size: 14px; color: #7a5c4a; line-height: 1.65; margin-bottom: 16px; }
+        .sa-tag {
+            display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .05em;
+            padding: 4px 10px; border-radius: 20px;
+            background: rgba(196,154,60,.08); border: 1px solid rgba(196,154,60,.22); color: #C49A3C;
+        }
+        .gold-tag { background: rgba(196,154,60,.15); border-color: rgba(196,154,60,.4); }
+
+        /* FAQ */
+        .faq-list { display: flex; flex-direction: column; gap: 10px; }
+        .faq-item {
+            background: #FFF9F4; border: 1px solid #E8D5C4; border-radius: 14px;
+            overflow: hidden; cursor: pointer; transition: border-color .2s;
+        }
+        .faq-item:hover { border-color: #C49A3C; }
+        .faq-item.open { border-color: #2C1A0E; }
+        .faq-q {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 18px 22px; gap: 14px;
+            font-family: 'Playfair Display',serif; font-size: 17px; font-weight: 600; color: #2C1A0E;
+        }
+        .faq-arrow { font-size: 18px; color: #C49A3C; transition: transform .25s; flex-shrink: 0; }
+        .faq-item.open .faq-arrow { transform: rotate(180deg); }
+        .faq-a {
+            max-height: 0; overflow: hidden;
+            transition: max-height .35s ease, padding .25s;
+            padding: 0 22px; font-size: 15px; color: #7a5c4a; line-height: 1.75;
+        }
+        .faq-item.open .faq-a { max-height: 320px; padding: 0 22px 20px; }
+
+        /* Nutritional table */
+        .nutri-wrapper { max-width: 920px; margin: 0 auto; }
+        .nutri-intro-lead {
+            font-family: 'Playfair Display',serif; font-size: clamp(20px,3vw,26px);
+            color: #2C1A0E; line-height: 1.4; margin-bottom: 12px;
+        }
+        .nutri-intro-sub { font-size: 15px; color: #7a5c4a; line-height: 1.7; margin-bottom: 36px; }
+
+        .nutri-tables { display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 24px; }
+        @media (min-width: 600px) { .nutri-tables { grid-template-columns: 1fr 1fr; } }
+
+        .nutri-table-wrap {
+            background: #FFF9F4; border: 1px solid #E8D5C4; border-radius: 18px; overflow: hidden;
+        }
+        .nutri-table-title {
+            background: #2C1A0E; color: #FFF9F4; padding: 14px 20px;
+            font-weight: 700; font-family: 'DM Sans',sans-serif; font-size: 13px; letter-spacing: .04em;
+        }
+        .nutri-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        .nutri-table thead th {
+            background: #F0E8DF; color: #5C3317; padding: 10px 20px;
+            text-align: left; font-weight: 700; font-size: 11px;
+            letter-spacing: .07em; text-transform: uppercase;
+        }
+        .nutri-table thead th:last-child { text-align: right; }
+        .nutri-table td { padding: 11px 20px; color: #4a3020; border-bottom: 1px solid #F0E8DF; }
+        .nutri-table td:last-child { text-align: right; font-weight: 600; color: #2C1A0E; }
+        .nutri-table tr:last-child td { border-bottom: none; }
+        .nt-main td { font-weight: 600; }
+        .nt-main td:first-child { color: #2C1A0E; }
+        .nt-sub td { padding-left: 34px; font-size: 13px; color: #7a5c4a; font-style: italic; }
+        .nt-sub td:last-child { font-weight: 400; color: #7a5c4a; }
+
+        /* Macro bars */
+        .macro-bars { margin-top: 32px; display: flex; flex-direction: column; gap: 14px; }
+        .macro-bar-row { display: grid; grid-template-columns: 130px 1fr 60px; gap: 12px; align-items: center; }
+        .macro-bar-label { font-size: 13px; font-weight: 600; color: #2C1A0E; text-align: right; }
+        .macro-bar-track { height: 10px; background: #F0E8DF; border-radius: 8px; overflow: hidden; }
+        .macro-bar-fill { height: 100%; border-radius: 8px; background: #C49A3C; transition: width 1s ease; }
+        .macro-bar-val { font-size: 13px; font-weight: 700; color: #C49A3C; }
+
+        .nutri-note {
+            font-size: 12px; color: #9a7a6a; line-height: 1.6;
+            border-top: 1px solid #E8D5C4; padding-top: 16px; font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -403,15 +522,15 @@
         </a>
 
         <!-- Desktop links -->
-        <div class="hidden md:flex space-x-8 text-sm font-medium" style="color:#7a5c4a;">
-            <a href="#sastojci"          class="hover:text-[#B5651D] transition">Sastojci</a>
-            <a href="#kome-je-namenjeno" class="hover:text-[#B5651D] transition">Za koga</a>
-            <a href="saznaj-vise.html"   class="font-semibold hover:text-[#9e5518] transition" style="color:#B5651D;">Saznaj više</a>
+        <div class="hidden md:flex space-x-6 text-sm font-medium" style="color:#7a5c4a;">
+            <a href="#saznaj-vise"         class="hover:text-[#C49A3C] transition">Naša tajna formula</a>
+            <a href="#sastojci"            class="hover:text-[#C49A3C] transition">Sastojci</a>
+            <a href="#zasto-velbi"         class="hover:text-[#C49A3C] transition">Zašto Velbi?</a>
         </div>
 
         <!-- Right side -->
         <div class="flex items-center gap-2">
-            <button onclick="openModal()" class="btn-dark" style="font-size:13px;padding:10px 20px;">Naruči odmah</button>
+            <a href="#naruci" class="btn-dark" style="font-size:13px;padding:10px 20px;">Naruči odmah</a>
 
             <!-- Hamburger (mobile only) -->
             <button id="menuBtn" class="md:hidden flex flex-col justify-center gap-[5px] p-2 cursor-pointer"
@@ -426,10 +545,10 @@
 
 <!-- Mobile menu dropdown -->
 <div id="mobileMenu">
-    <a href="#sastojci"          onclick="closeMobileMenu()">Sastojci</a>
-    <a href="#kome-je-namenjeno" onclick="closeMobileMenu()">Za koga je Velbi?</a>
-    <a href="#naruci"            onclick="closeMobileMenu()">Naruči</a>
-    <a href="saznaj-vise.html"   onclick="closeMobileMenu()" class="active-link" style="font-weight:600;">Saznaj više →</a>
+    <a href="#saznaj-vise"          onclick="closeMobileMenu()">Naša tajna formula</a>
+    <a href="#sastojci"             onclick="closeMobileMenu()">Sastojci</a>
+    <a href="#zasto-velbi"          onclick="closeMobileMenu()">Zašto Velbi?</a>
+    <a href="#naruci"               onclick="closeMobileMenu()">Naruči</a>
 </div>
 
 <!-- ════════════════ MODAL ════════════════ -->
@@ -447,35 +566,46 @@
             <h2 class="text-3xl font-bold mb-2" style="color:#2C1A0E;">Tvoja narudžbina.</h2>
             <p class="text-sm mb-8" style="color:#7a5c4a;">Popuni podatke ispod i tvoj Velbi uskoro stiže na adresu.</p>
             <form id="orderForm" class="space-y-5" onsubmit="submitForm(event)">
+                <!-- Web3Forms config — replace value with your key from https://web3forms.com -->
+                <input type="hidden" name="access_key" value="ZAMENI_SA_TVOJIM_KLJUCEM">
+                <input type="hidden" name="subject" value="Nova narudžbina — Velbi">
+                <input type="hidden" name="from_name" value="Velbi narudžbina">
+                <input type="checkbox" name="botcheck" style="display:none;">
                 <div>
                     <label class="block text-sm font-semibold mb-1" style="color:#2C1A0E;">Ime i prezime</label>
-                    <input type="text" required placeholder="Petar Petrović"
+                    <input type="text" name="Ime i prezime" required placeholder="Petar Petrović"
                            class="w-full rounded-xl p-3.5 outline-none"
                            style="background:#FAF6F1;border:1px solid #E8D5C4;color:#1F1209;font-family:'DM Sans',sans-serif;">
                 </div>
                 <div>
                     <label class="block text-sm font-semibold mb-1" style="color:#2C1A0E;">Broj telefona</label>
-                    <input type="tel" required placeholder="06x xxx xxxx"
+                    <input type="tel" name="Telefon" required placeholder="06x xxx xxxx"
+                           class="w-full rounded-xl p-3.5 outline-none"
+                           style="background:#FAF6F1;border:1px solid #E8D5C4;color:#1F1209;font-family:'DM Sans',sans-serif;">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1" style="color:#2C1A0E;">Email adresa</label>
+                    <input type="email" name="email" required placeholder="vas@email.com"
                            class="w-full rounded-xl p-3.5 outline-none"
                            style="background:#FAF6F1;border:1px solid #E8D5C4;color:#1F1209;font-family:'DM Sans',sans-serif;">
                 </div>
                 <div>
                     <label class="block text-sm font-semibold mb-1" style="color:#2C1A0E;">Adresa i grad za dostavu</label>
-                    <input type="text" required placeholder="Kneza Mihaila 1, Beograd"
+                    <input type="text" name="Adresa" required placeholder="Kneza Mihaila 1, Beograd"
                            class="w-full rounded-xl p-3.5 outline-none"
                            style="background:#FAF6F1;border:1px solid #E8D5C4;color:#1F1209;font-family:'DM Sans',sans-serif;">
                 </div>
                 <div>
                     <label class="block text-sm font-semibold mb-1" style="color:#2C1A0E;">Koji paket želiš?</label>
-                    <select required class="w-full rounded-xl p-3.5 outline-none cursor-pointer"
+                    <select name="Paket" required class="w-full rounded-xl p-3.5 outline-none cursor-pointer"
                             style="background:#FAF6F1;border:1px solid #E8D5C4;color:#1F1209;font-family:'DM Sans',sans-serif;">
                         <option value="">Izaberi opciju...</option>
-                        <option value="1">1 Kesica (Tamna čokolada) — 420 din</option>
-                        <option value="6">Paket od 6 kesica — 2.390 din</option>
-                        <option value="12">Paket od 12 kesica — 4.790 din</option>
+                        <option value="1 Kesica (Tamna čokolada) — 420 din">1 Kesica (Tamna čokolada) — 420 din</option>
+                        <option value="Paket od 6 kesica — 2.390 din">Paket od 6 kesica — 2.390 din</option>
+                        <option value="Paket od 12 kesica — 4.790 din">Paket od 12 kesica — 4.790 din</option>
                     </select>
                 </div>
-                <button type="submit" class="btn-caramel w-full mt-2" style="border-radius:12px;padding:16px 0;">
+                <button type="submit" id="submitBtn" class="btn-caramel w-full mt-2" style="border-radius:12px;padding:16px 0;">
                     Završi narudžbinu
                 </button>
             </form>
@@ -497,23 +627,16 @@
 <!-- ════════════════ HERO ════════════════ -->
 <section class="snap-group relative min-h-screen flex items-center justify-center overflow-hidden"
          style="background-color:#FAF6F1;">
-    <!-- Background: product close-up photo -->
-    <img src="velbi_kuglica_crna.jpeg" alt=""
-         class="absolute inset-0 w-full h-full pointer-events-none"
-         style="object-fit:cover;object-position:center;opacity:0.28;">
-    <!-- Light gradient overlay -->
-    <div class="absolute inset-0"
-         style="background:linear-gradient(135deg,rgba(250,246,241,0.65) 0%,rgba(250,246,241,0.25) 100%);"></div>
     <!-- Velbi logo as large watermark -->
     <img src="velbi-logo.png" alt="" class="absolute pointer-events-none"
          style="top:50%;left:50%;transform:translate(-50%,-50%);width:130%;opacity:0.18;mix-blend-mode:multiply;"
          onerror="this.style.display='none'">
 
     <div class="relative z-10 text-center px-6 pt-28 pb-24 max-w-5xl mx-auto w-full">
-        <p class="overline mb-6" style="color:#B5651D;">Proteinska wellbeing užina</p>
+        <p class="overline mb-6" style="color:#C49A3C;">Proteinska wellbeing užina</p>
         <h1 class="font-bold leading-tight mb-6"
             style="font-size:clamp(40px,8vw,80px);color:#2C1A0E;letter-spacing:-0.02em;font-style:italic;">
-            Proteinske kuglice<br>sa <span style="color:#B5651D;">kolagenom</span>
+            Proteinske kuglice<br>sa <span style="color:#C49A3C;">kolagenom</span>
         </h1>
         <p class="mb-10 mx-auto max-w-2xl"
            style="font-size:clamp(17px,2.2vw,21px);color:#7a5c4a;line-height:1.75;font-style:italic;">
@@ -523,15 +646,15 @@
         <!-- Rating -->
         <div class="inline-flex items-center gap-2 px-5 py-2 rounded-full mb-8 text-sm font-medium"
              style="background:rgba(44,26,14,0.05);color:#2C1A0E;border:1px solid rgba(44,26,14,0.14);">
-            <span style="color:#B5651D;">★★★★★</span>
+            <span style="color:#C49A3C;">★★★★★</span>
             <span>4.9 — 200+ zadovoljnih kupaca</span>
         </div>
 
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
             <a href="#naruci" class="btn-caramel">Poruči svoj Velbi</a>
-            <a href="#sastojci"
+            <a href="javascript:void(0)" onclick="openInfoPage()"
                class="inline-flex items-center justify-center px-10 py-4 rounded-full font-semibold text-base"
-               style="border:2px solid rgba(44,26,14,0.25);color:#2C1A0E;transition:background .2s;"
+               style="border:2px solid rgba(44,26,14,0.25);color:#2C1A0E;transition:background .2s;cursor:pointer;"
                onmouseover="this.style.background='rgba(44,26,14,0.06)'"
                onmouseout="this.style.background='transparent'">
                 Saznaj više
@@ -540,86 +663,78 @@
     </div>
 </section>
 
-<!-- ════════════ SNAP GROUP 2: Ingredients + Product Photo (side by side) ════════════ -->
-<div class="snap-group snap-split">
+<!-- ════════════════ NAŠA TAJNA FORMULA ════════════════ -->
+<section id="saznaj-vise" class="collagen-section">
+  <div class="reveal">
+    <p class="overline mb-3">Naša tajna formula</p>
+    <h2 class="section-title">Više od proteina —<br><span style="color:#C49A3C;font-style:italic;">snaga kolagena</span></h2>
+    <p class="section-sub">Kolagen je strukturni protein koji gradi kožu, zglobove i vezivna tkiva. Svaka Velbi kuglica sadrži kolagen koji direktno podržava tvoj organizam iznutra.</p>
+  </div>
+  <div class="collagen-cards">
+    <div class="collagen-card reveal">
+      <span class="card-emoji">✨</span>
+      <div class="card-title">Lepota kože</div>
+      <div class="card-desc">Doprinosi elastičnosti i mladolačkom izgledu kože.</div>
+    </div>
+    <div class="collagen-card reveal">
+      <span class="card-emoji" style="line-height:1;"><svg width="34" height="50" viewBox="69 55 62 90" xmlns="http://www.w3.org/2000/svg" style="display:block;"><g transform="translate(100,100)"><path d="M -26 -22 Q 0 -40 26 -22" fill="none" stroke="#A97C3E" stroke-width="6" stroke-linecap="round"/><line x1="0" y1="-13" x2="0" y2="13" stroke="#A97C3E" stroke-width="6" stroke-linecap="round"/><path d="M -26 22 Q 0 40 26 22" fill="none" stroke="#A97C3E" stroke-width="6" stroke-linecap="round"/><circle cx="0" cy="0" r="7" fill="#8C6328"/></g></svg></span>
+      <div class="card-title">Zdravi zglobovi</div>
+      <div class="card-desc">Podržava normalnu funkciju kostiju i zglobova.</div>
+    </div>
+    <div class="collagen-card reveal">
+      <span class="card-emoji">💪</span>
+      <div class="card-title">Vezivna tkiva</div>
+      <div class="card-desc">Jača vezivno tkivo i podržava pokretljivost svaki dan.</div>
+    </div>
+    <div class="collagen-card reveal">
+      <span class="card-emoji">🌿</span>
+      <div class="card-title">Prirodni izvor</div>
+      <div class="card-desc">Kolagen kombinovan sa prirodnim proteinima.</div>
+    </div>
+  </div>
+</section>
 
-     <!-- RIGHT: Product photo -->
-    <section class="split-photo">
-        <img src="velbi_kuglica_crna.jpeg" alt="Velbi tamna čokolada — izgled iznutra"
-             class="absolute inset-0 w-full h-full"
-             style="object-fit:cover;object-position:center;">
-        <div class="absolute inset-0"
-             style="background:linear-gradient(to right,rgba(28,14,6,0.75) 0%,rgba(28,14,6,0.20) 60%,rgba(28,14,6,0) 100%);"></div>
-        <div class="absolute inset-0 flex items-end" style="padding:2.5rem 2.5rem;">
-            <div>
-                <p class="overline" style="color:#D4A5A0;margin-bottom:10px;">Belgijska čokolada · 60% kakao</p>
-                <h2 class="font-bold" style="font-size:clamp(22px,3.5vw,40px);color:#FFF9F4;line-height:1.2;margin-bottom:10px;">
-                    Pravi čokoladni preliv.<br>Nije glazura.
-                </h2>
-                <p style="color:rgba(255,249,244,0.68);font-size:15px;line-height:1.6;">
-                    Premium belgijska tamna čokolada koja se topi u ustima —<br>iznutra superhrana, spolja čokoladni doživljaj.
-                </p>
-            </div>
-        </div>
-    </section>
+<!-- ════════════════ SASTOJCI ════════════════ -->
+<section id="sastojci" class="py-24 px-6" style="background-color:#FAF6F1;">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center mb-12 fade-up">
+      <p class="overline mb-3">Pažljivo odabrani</p>
+      <h2 class="text-4xl md:text-5xl font-bold tracking-tight mb-4" style="color:#2C1A0E;">Svaki sastojak <span style="color:#C49A3C;font-style:italic;">ima razlog</span>.</h2>
+      <p class="text-lg max-w-2xl mx-auto" style="color:#7a5c4a;">Samo ono što telo zaslužuje — bez kompromisa.</p>
+    </div>
+    <div class="sastojci-grid fade-up">
+      <div class="sastojak-card" style="text-align:center;">
+        <span class="sa-icon">🌴</span>
+        <div class="sa-name">Urme</div>
+        <div class="sa-desc">Prirodni izvor energije i vlakana.</div>
+      </div>
+      <div class="sastojak-card" style="text-align:center;">
+        <span class="sa-icon">🌾</span>
+        <div class="sa-name">Pšenične pahuljice</div>
+        <div class="sa-desc">Kompleksni ugljeni hidrati za dugotrajnu energiju.</div>
+      </div>
+      <div class="sastojak-card" style="text-align:center;">
+        <span class="sa-icon">💪</span>
+        <div class="sa-name">Protein</div>
+        <div class="sa-desc">Za vitalnost i dobar osećaj tokom celog dana.</div>
+      </div>
+      <div class="sastojak-card" style="text-align:center;">
+        <img src="kolagen.png" alt="Kolagen" style="width:52px;height:52px;object-fit:contain;margin:0 auto 14px;display:block;">
+        <div class="sa-name">Kolagen</div>
+        <div class="sa-desc">Za kožu, zglobove i vezivna tkiva — ono po čemu se Velbi razlikuje.</div>
+      </div>
+      <div class="sastojak-card" style="text-align:center;">
+        <span class="sa-icon">🍫</span>
+        <div class="sa-name">Čokolada</div>
+        <div class="sa-desc">Crna čokolada — za savršen ukus bez griže savesti.</div>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <!-- LEFT: Ingredients -->
-    <section class="split-ingredients">
-        <div style="width:100%;padding:2rem 2.5rem;">
-            <div class="text-center fade-up" style="margin-bottom:1.5rem;">
-                <p class="overline">Šta je unutra?</p>
-            </div>
-            <div>
-                <div class="flex items-start gap-4 fade-up" style="padding:0.9rem 0;">
-                    <div class="icon-ring" style="width:52px;height:52px;flex-shrink:0;">
-                        <img src="kolagen.png" alt="Kolagen" class="w-full h-full object-cover">
-                    </div>
-                    <div>
-                        <h3 class="font-bold" style="color:#2C1A0E;font-size:17px;margin-bottom:2px;">Kolagen</h3>
-                        <p style="color:#7a5c4a;font-size:14px;line-height:1.5;">Podrška koži, zglobovima i regeneraciji organizma.</p>
-                    </div>
-                </div>
-                <hr class="sep">
-                <div class="flex items-start gap-4 fade-up" style="padding:0.9rem 0;">
-                    <div class="icon-ring" style="width:52px;height:52px;flex-shrink:0;">
-                        <img src="energy_logo.jpeg" alt="Proteini" class="w-full h-full object-cover">
-                    </div>
-                    <div>
-                        <h3 class="font-bold" style="color:#2C1A0E;font-size:17px;margin-bottom:2px;">15g proteina</h3>
-                        <p style="color:#7a5c4a;font-size:14px;line-height:1.5;">Dugotrajna energija i osećaj sitosti koji traje satima.</p>
-                    </div>
-                </div>
-                <hr class="sep">
-                <div class="flex items-start gap-4 fade-up" style="padding:0.9rem 0;">
-                    <div class="icon-ring" style="width:52px;height:52px;flex-shrink:0;">
-                        <img src="cocoa_logo.jpeg" alt="Belgijska čokolada" class="w-full h-full object-cover">
-                    </div>
-                    <div>
-                        <h3 class="font-bold" style="color:#2C1A0E;font-size:17px;margin-bottom:2px;">Belgijska čokolada</h3>
-                        <p style="color:#7a5c4a;font-size:14px;line-height:1.5;">Premium tamna čokolada sa 60% kakaa koja se topi u ustima.</p>
-                    </div>
-                </div>
-                <hr class="sep">
-                <div class="flex items-start gap-4 fade-up" style="padding:0.9rem 0;">
-                    <div class="icon-ring" style="width:52px;height:52px;flex-shrink:0;">
-                        <img src="plant_logo.jpeg" alt="Bez šećera" class="w-full h-full object-cover">
-                    </div>
-                    <div>
-                        <h3 class="font-bold" style="color:#2C1A0E;font-size:17px;margin-bottom:2px;">Bez dodatog šećera</h3>
-                        <p style="color:#7a5c4a;font-size:14px;line-height:1.5;">Samo pažljivo birani prirodni sastojci.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-</div><!-- end snap group 2 -->
-
-<!-- ════════════ SNAP GROUP 3: Features + Target Audience ════════════ -->
-<div class="snap-group">
 
 <!-- ════════════════ FEATURES ════════════════ -->
-<section id="sastojci" class="py-24 px-6" style="background-color:#FAF6F1;">
+<section id="zasto-velbi" class="py-24 px-6" style="background-color:#FAF6F1;">
     <div class="max-w-6xl mx-auto">
         <p class="overline mb-10 fade-up text-center">Zašto Velbi?</p>
         <div class="flex flex-col md:flex-row items-center gap-12 md:gap-20 fade-up">
@@ -628,98 +743,72 @@
             <div class="flex-1 min-w-0">
                 <h2 style="font-family:'Playfair Display',serif;font-size:clamp(28px,4vw,50px);color:#2C1A0E;line-height:1.2;margin-bottom:22px;">
                     Nije grickalica.<br>
-                    To je tvoj <em style="color:#B5651D;font-style:italic;">svakodnevni<br>ritual.</em>
+                    To je tvoj <em style="color:#C49A3C;font-style:italic;">svakodnevni<br>ritual.</em>
                 </h2>
                 <p style="color:#7a5c4a;font-size:16px;line-height:1.8;margin-bottom:30px;max-width:440px;">
                     Velbi kuglice su za ljude koji vode računa o zdravlju, koži i izgledu — bez teretane, bez komplikacija. Protein i kolagen rade zajedno za tvoje telo, iznutra.
                 </p>
                 <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:15px;">
                     <li style="display:flex;align-items:center;gap:13px;font-size:15px;color:#4a3020;">
-                        <span style="width:23px;height:23px;border-radius:50%;background:#B5651D;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="11" height="8" viewBox="0 0 11 8" fill="none"><path d="M1 4L4 7L10 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                        <span style="width:23px;height:23px;border-radius:50%;background:#C49A3C;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="11" height="8" viewBox="0 0 11 8" fill="none"><path d="M1 4L4 7L10 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
                         Kolagen podržava elastičnost i sjaj kože
                     </li>
                     <li style="display:flex;align-items:center;gap:13px;font-size:15px;color:#4a3020;">
-                        <span style="width:23px;height:23px;border-radius:50%;background:#B5651D;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="11" height="8" viewBox="0 0 11 8" fill="none"><path d="M1 4L4 7L10 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                        <span style="width:23px;height:23px;border-radius:50%;background:#C49A3C;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="11" height="8" viewBox="0 0 11 8" fill="none"><path d="M1 4L4 7L10 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
                         Podržava zdrave zglobove i pokretljivost
                     </li>
                     <li style="display:flex;align-items:center;gap:13px;font-size:15px;color:#4a3020;">
-                        <span style="width:23px;height:23px;border-radius:50%;background:#B5651D;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="11" height="8" viewBox="0 0 11 8" fill="none"><path d="M1 4L4 7L10 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                        <span style="width:23px;height:23px;border-radius:50%;background:#C49A3C;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="11" height="8" viewBox="0 0 11 8" fill="none"><path d="M1 4L4 7L10 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
                         Protein za vitalnost i dobar osećaj tokom dana
                     </li>
                     <li style="display:flex;align-items:center;gap:13px;font-size:15px;color:#4a3020;">
-                        <span style="width:23px;height:23px;border-radius:50%;background:#B5651D;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="11" height="8" viewBox="0 0 11 8" fill="none"><path d="M1 4L4 7L10 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                        <span style="width:23px;height:23px;border-radius:50%;background:#C49A3C;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="11" height="8" viewBox="0 0 11 8" fill="none"><path d="M1 4L4 7L10 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
                         Savršen kao svakodnevni međuobrok ili uz kafu
                     </li>
                     <li style="display:flex;align-items:center;gap:13px;font-size:15px;color:#4a3020;">
-                        <span style="width:23px;height:23px;border-radius:50%;background:#B5651D;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="11" height="8" viewBox="0 0 11 8" fill="none"><path d="M1 4L4 7L10 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                        <span style="width:23px;height:23px;border-radius:50%;background:#C49A3C;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="11" height="8" viewBox="0 0 11 8" fill="none"><path d="M1 4L4 7L10 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
                         Bez veštačkih aditiva — samo prirodni sastojci
                     </li>
                 </ul>
             </div>
 
-            <!-- RIGHT: circular infographic -->
-            <div class="flex-shrink-0 flex justify-center">
-                <div style="position:relative;width:300px;height:300px;">
-                    <!-- Outer ring with subtle dot texture -->
-                    <div style="position:absolute;inset:0;border-radius:50%;
-                        background-color:#DDD0C0;
-                        background-image:radial-gradient(circle,rgba(140,110,80,0.28) 1.5px,transparent 1.5px);
-                        background-size:9px 9px;"></div>
-                    <!-- White inner ring -->
-                    <div style="position:absolute;inset:42px;border-radius:50%;background:#FFF9F4;box-shadow:inset 0 2px 14px rgba(44,26,14,0.07);"></div>
-                    <!-- Dark center circle -->
-                    <div style="position:absolute;inset:100px;border-radius:50%;background:#2C1A0E;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 6px 22px rgba(44,26,14,0.45);">
-                        <span style="font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:#B5651D;line-height:1;">5g</span>
-                        <span style="font-size:7px;font-weight:700;letter-spacing:.20em;text-transform:uppercase;color:#D4A5A0;margin-top:4px;">KOLAGENA</span>
-                    </div>
-                    <!-- Floating labels (desktop only) -->
-                    <div class="hidden md:block" style="position:absolute;top:8%;right:-112px;background:#FFF9F4;border:1px solid #E8D5C4;border-radius:20px;padding:5px 14px;font-size:10px;font-weight:700;letter-spacing:.09em;color:#2C1A0E;white-space:nowrap;box-shadow:0 2px 8px rgba(44,26,14,0.08);">BEZ ŠEĆERA</div>
-                    <div class="hidden md:block" style="position:absolute;top:39%;right:-108px;background:#FFF9F4;border:1px solid #E8D5C4;border-radius:20px;padding:5px 14px;font-size:10px;font-weight:700;letter-spacing:.09em;color:#2C1A0E;white-space:nowrap;box-shadow:0 2px 8px rgba(44,26,14,0.08);">KOLAGEN ↗</div>
-                    <div class="hidden md:block" style="position:absolute;bottom:14%;right:-116px;background:#FFF9F4;border:1px solid #E8D5C4;border-radius:20px;padding:5px 14px;font-size:10px;font-weight:700;letter-spacing:.09em;color:#2C1A0E;white-space:nowrap;box-shadow:0 2px 8px rgba(44,26,14,0.08);">PROTEIN 15G</div>
-                </div>
-            </div>
 
         </div>
     </div>
 </section>
 
 <!-- ════════════════ TARGET AUDIENCE ════════════════ -->
-<section id="kome-je-namenjeno" class="py-24 px-6 relative overflow-hidden"
-         style="background-color:#FFF9F4;">
-    <img src="4.jpeg" alt="" class="absolute pointer-events-none"
-         style="top:50%;left:50%;transform:translate(-50%,-50%);width:160%;opacity:0.05;object-fit:cover;"
-         onerror="this.style.display='none'">
+<!-- <section id="kome-je-namenjeno" class="py-24 px-6 relative overflow-hidden"
+         style="background-color:#FAF6F1;">
     <div class="max-w-6xl mx-auto relative z-10">
         <div class="text-center mb-12 fade-up">
             <p class="overline mb-3">Za koga je Velbi?</p>
             <h2 class="text-4xl md:text-5xl font-bold tracking-tight mb-4" style="color:#2C1A0E;">Za sve koji vole nešto slatko i zdravo.</h2>
-            <p class="text-xl max-w-2xl mx-auto" style="color:#7a5c4a;">Velbi nema target grupu — ima svakoga ko ceni pravi ukus i prirodne sastojke.</p>
+            <p class="text-xl max-w-2xl mx-auto" style="color:#7a5c4a;">Velbi nije "za sve". Velbi je za one koji cene kvalitet, vode računa o sebi i ne žele da biraju između ukusnog i zdravog.</p>
         </div>
         <div class="panels panels-4 fade-up">
             <div class="panel-card card p-7">
-                <h4 class="text-xl font-bold mb-3" style="color:#B5651D;">Sportisti</h4>
+                <h4 class="text-xl font-bold mb-3" style="color:#C49A3C;">Sportisti</h4>
                 <p style="color:#7a5c4a;line-height:1.7;">Idealan međuobrok pre ili posle treninga. Brzi proteini, kolagen za regeneraciju, energija iz urmi.</p>
             </div>
             <div class="panel-card card p-7">
-                <h4 class="text-xl font-bold mb-3" style="color:#B5651D;">Zaposleni</h4>
+                <h4 class="text-xl font-bold mb-3" style="color:#C49A3C;">Zaposleni</h4>
                 <p style="color:#7a5c4a;line-height:1.7;">Kad nema vremena za zdrav obrok — Velbi u tašni je uvek spreman. Energija bez pada koncentracije.</p>
             </div>
             <div class="panel-card card p-7">
-                <h4 class="text-xl font-bold mb-3" style="color:#B5651D;">Porodice</h4>
+                <h4 class="text-xl font-bold mb-3" style="color:#C49A3C;">Porodice</h4>
                 <p style="color:#7a5c4a;line-height:1.7;">Deca obožavaju čokoladni preliv, roditelji vole što znaju šta je unutra. Pobeda za celu porodicu.</p>
             </div>
             <div class="panel-card card p-7">
-                <h4 class="text-xl font-bold mb-3" style="color:#B5651D;">Studenti</h4>
+                <h4 class="text-xl font-bold mb-3" style="color:#C49A3C;">Studenti</h4>
                 <p style="color:#7a5c4a;line-height:1.7;">Prirodni šećeri iz urmi i zdrave masti daju mozgu gorivo za bolju koncentraciju i fokus tokom učenja.</p>
             </div>
         </div>
     </div>
-</section>
-
-</div><!-- end snap group 3 -->
+</section> -->
 
 <!-- ════════════════ USAGE OCCASIONS ════════════════ -->
-<section class="snap-group py-24 px-6" style="background-color:#FFF9F4;">
+<!-- <section class="py-24 px-6" style="background-color:#FAF6F1;">
     <div class="max-w-5xl mx-auto">
         <div class="text-center mb-12 fade-up">
             <p class="overline mb-3">Svaki momenat</p>
@@ -759,50 +848,127 @@
             </div>
         </div>
     </div>
-</section>
+</section> -->
 
+<!-- ════════════════ NUTRITIVNA VREDNOST ════════════════ -->
+<!-- <section id="nutritivna-vrednost" class="py-24 px-6" style="background-color:#FAF6F1;">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center mb-12 fade-up">
+      <p class="overline mb-3">Transparentnost</p>
+      <h2 class="text-4xl md:text-5xl font-bold tracking-tight mb-4" style="color:#2C1A0E;">Nutritivna <span style="color:#C49A3C;font-style:italic;">vrednost</span>.</h2>
+    </div>
+    <div class="nutri-wrapper fade-up">
+      <div class="nutri-intro-lead">Laboratorijski analizirani nutritivni profil.</div>
+      <p class="nutri-intro-sub">
+        Vrednosti su dobijene akreditovanom laboratorijskom analizom. Transparentno, precizno, bez skrivenih podataka.
+      </p>
+      <div class="nutri-tables">
+        <div class="nutri-table-wrap">
+          <div class="nutri-table-title">Na 100 g proizvoda</div>
+          <table class="nutri-table">
+            <thead><tr><th>Nutritivna vrednost</th><th>Vrednost</th></tr></thead>
+            <tbody>
+              <tr class="nt-main"><td>Energetska vrednost</td><td>1788 kJ / 426 kcal</td></tr>
+              <tr class="nt-main"><td>Masti</td><td>17,74 g</td></tr>
+              <tr class="nt-sub"><td>od kojih zasićene masne kiseline</td><td>10,73 g</td></tr>
+              <tr class="nt-main"><td>Ugljeni hidrati</td><td>50,74 g</td></tr>
+              <tr class="nt-sub"><td>od kojih šećeri</td><td>3,65 g</td></tr>
+              <tr class="nt-main"><td>Proteini</td><td>15,85 g</td></tr>
+              <tr class="nt-main"><td>So</td><td>0,94 g</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="nutri-table-wrap">
+          <div class="nutri-table-title">Na porciju · 1 kesica (80 g)</div>
+          <table class="nutri-table">
+            <thead><tr><th>Nutritivna vrednost</th><th>Vrednost</th></tr></thead>
+            <tbody>
+              <tr class="nt-main"><td>Energetska vrednost</td><td>1430 kJ / 341 kcal</td></tr>
+              <tr class="nt-main"><td>Masti</td><td>14,19 g</td></tr>
+              <tr class="nt-sub"><td>od kojih zasićene masne kiseline</td><td>8,58 g</td></tr>
+              <tr class="nt-main"><td>Ugljeni hidrati</td><td>40,59 g</td></tr>
+              <tr class="nt-sub"><td>od kojih šećeri</td><td>2,92 g</td></tr>
+              <tr class="nt-main"><td>Proteini</td><td>12,68 g</td></tr>
+              <tr class="nt-main"><td>So</td><td>0,75 g</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="macro-bars" id="macroBars">
+        <div class="macro-bar-row">
+          <div class="macro-bar-label">Ugljeni hidrati</div>
+          <div class="macro-bar-track"><div class="macro-bar-fill" style="width:0%" data-width="51%"></div></div>
+          <div class="macro-bar-val">50,74 g</div>
+        </div>
+        <div class="macro-bar-row">
+          <div class="macro-bar-label">Masti</div>
+          <div class="macro-bar-track"><div class="macro-bar-fill" style="width:0%" data-width="18%"></div></div>
+          <div class="macro-bar-val">17,74 g</div>
+        </div>
+        <div class="macro-bar-row">
+          <div class="macro-bar-label">Proteini</div>
+          <div class="macro-bar-track"><div class="macro-bar-fill" style="width:0%" data-width="16%"></div></div>
+          <div class="macro-bar-val">15,85 g</div>
+        </div>
+        <div class="macro-bar-row">
+          <div class="macro-bar-label">So</div>
+          <div class="macro-bar-track"><div class="macro-bar-fill" style="width:0%" data-width="1%"></div></div>
+          <div class="macro-bar-val">0,94 g</div>
+        </div>
+      </div>
+      <p class="nutri-note" style="margin-top:28px;">
+        * Vrednosti su dobijene laboratorijskom analizom. Sadržaj šećera (3,65 g) izračunat je konverzijom iz g/kg (36,49 g/kg). Energetska vrednost: 1788 kJ / 426 kcal na 100 g. Vrednosti po porciji izračunate su proporcionalno za 80 g.
+      </p>
+    </div>
+  </div>
+</section> -->
 
-<!-- COLLAGEN SECTION -->
-<section class="collagen-section" id="sastojci">
-  <div class="reveal">
-    <div class="section-tag">Zašto kolagen?</div>
-    <h2 class="section-title">Više od proteinske užine.</h2>
-    <p class="section-sub">Velbi kombinuje funkcionalnost i uživanje — svaki zalogaj radi nešto dobro za tvoje telo.</p>
+<!-- ════════════════ FAQ ════════════════ -->
+<!-- <section id="faq" class="py-24 px-6" style="background-color:#FAF6F1;">
+  <div class="max-w-3xl mx-auto">
+    <div class="text-center mb-12 fade-up">
+      <p class="overline mb-3">Imaš pitanje?</p>
+      <h2 class="text-4xl md:text-5xl font-bold tracking-tight mb-4" style="color:#2C1A0E;">Česta <span style="color:#C49A3C;font-style:italic;">pitanja</span>.</h2>
+    </div>
+    <div class="faq-list fade-up">
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">Da li su Velbi kuglice zdrave kao desert?<span class="faq-arrow">↓</span></div>
+        <div class="faq-a">Da — Velbi se pravi bez rafinisanog šećera, bez veštačkih boja i aroma. Koristimo urme kao prirodni zaslađivač, pravu belgijsku tamnu čokoladu i whey isolate protein. To je desert koji radi nešto dobro za tvoje telo.</div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">Koliko kuglica je jedna porcija?<span class="faq-arrow">↓</span></div>
+        <div class="faq-a">Jedna kesica sadrži 4 kuglice (80g). To je idealna porcija za međuobrok — dovoljna da zasiti, a ne previše da bi ugrozila tvoje nutritivne ciljeve.</div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">Zašto je kolagen u hrani bolji od suplemenata?<span class="faq-arrow">↓</span></div>
+        <div class="faq-a">Kolagen kroz hranu je prirodniji i ugodniji za digestivni sistem. Telo ga lakše prepoznaje i apsorbuje kada dolazi u kombinaciji sa drugim nutrijentima — proteinima, mastima i prirodnim šećerima, baš kao u Velbi kuglicama.</div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">Kada je idealno pojesti Velbi?<span class="faq-arrow">↓</span></div>
+        <div class="faq-a">Velbi je savršen pre ili posle treninga, kao popodnevni međuobrok, ili kad te napadne želja za slatkim. Bez griže savesti — to je wellbeing ritual koji funkcioniše u svakom trenutku dana.</div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">Da li Velbi sadrži gluten?<span class="faq-arrow">↓</span></div>
+        <div class="faq-a">Velbi sadrži pahuljice zobi. Kuglice nisu certifikovane kao bezglutenske. Ako imaš celijakiju ili osetljivost na gluten, preporučujemo da se konsultuješ sa lekarom pre konzumacije.</div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">Kako se čuvaju i koliko traju?<span class="faq-arrow">↓</span></div>
+        <div class="faq-a">Velbi kuglice čuvaj na hladnom i suvom mestu. Nakon otvaranja, preporučujemo čuvanje u frižideru i konzumaciju u roku od 7 dana. Rok trajanja neotvorene kesice naznačen je na pakovanju.</div>
+      </div>
+    </div>
   </div>
-  <div class="collagen-cards">
-    <div class="collagen-card reveal reveal-delay-1">
-      <span class="card-emoji">💎</span>
-      <div class="card-title">Kolagen</div>
-      <div class="card-desc">Podrška koži, elastičnosti i svakodnevnoj regeneraciji. Tvoj wellbeing u svakom zalogaju — bez tableta i suplemenata.</div>
-    </div>
-    <div class="collagen-card reveal reveal-delay-2">
-      <span class="card-emoji">⚡</span>
-      <div class="card-title">Proteini</div>
-      <div class="card-desc">Sitost koja traje. Whey isolate protein koji ti daje energiju bez naglog pada šećera i umora koji sledi.</div>
-    </div>
-    <div class="collagen-card reveal reveal-delay-3">
-      <span class="card-emoji">🌴</span>
-      <div class="card-title">Urme</div>
-      <div class="card-desc">Prirodna slatkoća bez griže savesti. Bogate vlaknima, prirodnim šećerima i mineralima koji hrane telo.</div>
-    </div>
-    <div class="collagen-card reveal reveal-delay-4">
-      <span class="card-emoji">🍫</span>
-      <div class="card-title">Belgijska čokolada</div>
-      <div class="card-desc">Nije glazura, nije imitacija. Pravi belgijski čokoladni preliv — tamna ili bela, oba sa 60% kakaa.</div>
-    </div>
-  </div>
-</section>
+</section> -->
 
 <!-- ════════════════ ORDER ════════════════ -->
-<section id="naruci" class="snap-group py-24 px-6 relative overflow-hidden" style="background-color:#2C1A0E;">
+<section id="naruci" class="snap-group py-24 px-6 relative overflow-hidden" style="background-color:#E4D4BE;">
     <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[60rem] h-[60rem] rounded-full pointer-events-none"
-         style="background:radial-gradient(circle,rgba(181,101,29,.18) 0%,transparent 70%);"></div>
+         style="background:radial-gradient(circle,rgba(196,154,60,.22) 0%,transparent 70%);"></div>
 
     <div class="max-w-6xl mx-auto relative z-10">
         <div class="text-center mb-14 fade-up">
-            <p class="overline mb-3" style="color:#D4A5A0;">Naruči danas</p>
-            <h2 class="text-4xl md:text-5xl font-bold tracking-tight mb-4" style="color:#FFF9F4;">Naruči proteinske<br>kuglice danas.</h2>
-            <p class="text-xl" style="color:rgba(255,249,244,.55);">Sveže napravljene, dostavljeno do tvojih vrata za 2–3 radna dana.</p>
+            <p class="overline mb-3" style="color:#C49A3C;">Naruči danas</p>
+            <h2 class="text-4xl md:text-5xl font-bold tracking-tight mb-4" style="color:#2C1A0E;">Naruči proteinske<br>kuglice danas.</h2>
+            <p class="text-xl" style="color:#7a5c4a;">Sveže napravljene, dostavljeno do tvojih vrata za 2–3 radna dana.</p>
         </div>
 
         <!-- 3 product cards — horizontal scroll on mobile -->
@@ -810,14 +976,14 @@
 
             <!-- 1 Kesica -->
             <div class="panel-card rounded-3xl p-7 flex flex-col items-center text-center relative transition-all duration-300 hover:-translate-y-2"
-                 style="background:#FFF9F4;box-shadow:0 8px 40px rgba(0,0,0,.28);">
+                 style="background:#FFF9F4;box-shadow:0 8px 32px rgba(44,26,14,.12);border-top:3px solid rgba(196,154,60,.35);">
                 <div class="w-full rounded-2xl mb-5 overflow-hidden border border-[#E8D5C4]"
                      style="height:220px;background:#FAF6F1;">
                     <img src="1.png" alt="Velbi 1 Kesica"
                          class="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                          loading="lazy" onerror="this.parentElement.style.display='none'">
                 </div>
-                <h3 class="text-2xl font-bold mb-2" style="color:#2C1A0E;">1 Kesica</h3>
+                <h3 class="text-2xl font-bold mb-2 flex items-center justify-center gap-2" style="color:#2C1A0E;">1 Kesica<img src="kolagen.png" alt="" style="width:28px;height:28px;object-fit:contain;"></h3>
                 <p class="mb-5 flex-grow text-sm" style="color:#7a5c4a;">80g · 4 kuglice<br>Tamna belgijska čokolada.</p>
                 <div class="text-4xl font-bold mb-1" style="color:#2C1A0E;">420 <span class="text-xl font-semibold">din</span></div>
                 <div class="text-xs uppercase tracking-wide font-semibold mb-6" style="color:#9a7a6a;">+ cena dostave</div>
@@ -826,7 +992,7 @@
 
             <!-- Paket 6 (featured) -->
             <div class="panel-card rounded-3xl p-7 flex flex-col items-center text-center relative border-2 transition-all duration-300 hover:-translate-y-2"
-                 style="background:#FFF9F4;border-color:#B5651D;box-shadow:0 16px 60px rgba(0,0,0,.38);">
+                 style="background:#FFF9F4;border-color:#C49A3C;box-shadow:0 16px 48px rgba(44,26,14,.18);">
                 <div class="ribbon">PREPORUKA</div>
                 <div class="w-full rounded-2xl mb-5 overflow-hidden border border-[#E8D5C4]"
                      style="height:220px;background:#FAF6F1;">
@@ -834,7 +1000,7 @@
                          class="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                          loading="lazy" onerror="this.parentElement.style.display='none'">
                 </div>
-                <h3 class="text-2xl font-bold mb-2" style="color:#2C1A0E;">Paket od 6 kesica</h3>
+                <h3 class="text-2xl font-bold mb-2 flex items-center justify-center gap-2" style="color:#2C1A0E;">Paket od 6 kesica<img src="kolagen.png" alt="" style="width:28px;height:28px;object-fit:contain;"></h3>
                 <p class="mb-5 flex-grow text-sm" style="color:#7a5c4a;">6 kesica tamne čokolade.<br>Ukupno 24 proteinske kuglice.</p>
                 <div class="text-4xl font-bold mb-1" style="color:#2C1A0E;">2.390 <span class="text-xl font-semibold">din</span></div>
                 <div class="text-xs uppercase tracking-wide font-semibold mb-6" style="color:#9a7a6a;">+ cena dostave</div>
@@ -843,14 +1009,14 @@
 
             <!-- Paket 12 -->
             <div class="panel-card rounded-3xl p-7 flex flex-col items-center text-center relative transition-all duration-300 hover:-translate-y-2"
-                 style="background:#FFF9F4;box-shadow:0 8px 40px rgba(0,0,0,.28);">
+                 style="background:#FFF9F4;box-shadow:0 8px 32px rgba(44,26,14,.12);border-top:3px solid rgba(196,154,60,.35);">
                 <div class="w-full rounded-2xl mb-5 overflow-hidden border border-[#E8D5C4]"
                      style="height:220px;background:#FAF6F1;">
                     <img src="3.png" alt="Velbi Paket 12 kesica"
                          class="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                          loading="lazy" onerror="this.parentElement.style.display='none'">
                 </div>
-                <h3 class="text-2xl font-bold mb-2" style="color:#2C1A0E;">Paket od 12 kesica</h3>
+                <h3 class="text-2xl font-bold mb-2 flex items-center justify-center gap-2" style="color:#2C1A0E;">Paket od 12 kesica<img src="kolagen.png" alt="" style="width:28px;height:28px;object-fit:contain;"></h3>
                 <p class="mb-5 flex-grow text-sm" style="color:#7a5c4a;">12 kesica tamne čokolade.<br>Zaliha od 48 kuglica.</p>
                 <div class="text-4xl font-bold mb-1" style="color:#2C1A0E;">4.790 <span class="text-xl font-semibold">din</span></div>
                 <div class="text-xs uppercase tracking-wide font-semibold mb-6" style="color:#9a7a6a;">+ cena dostave</div>
@@ -861,10 +1027,93 @@
     </div>
 </section>
 
+<!-- ════════════════ INFO PAGE OVERLAY ════════════════ -->
+<div id="infoPage" style="position:fixed;inset:0;z-index:200;background:#FAF6F1;overflow-y:auto;display:none;opacity:0;transition:opacity 0.3s ease;">
+
+  <!-- Sticky top bar -->
+  <div style="position:sticky;top:0;background:#FAF6F1;border-bottom:1px solid rgba(44,26,14,0.10);padding:16px 24px;display:flex;align-items:center;justify-content:space-between;z-index:10;">
+    <button onclick="closeInfoPage()" style="font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:#2C1A0E;background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:6px;padding:6px 0;">← Nazad</button>
+    <span style="font-family:'Playfair Display',serif;font-weight:700;font-size:20px;color:#2C1A0E;">Velbi.</span>
+    <button onclick="closeInfoPage()" style="font-size:18px;line-height:1;color:#7a5c4a;background:none;border:none;cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:background 0.2s;" onmouseover="this.style.background='rgba(44,26,14,0.08)'" onmouseout="this.style.background='transparent'">✕</button>
+  </div>
+
+  <!-- Nutritivna vrednost -->
+  <section class="py-24 px-6" style="background-color:#FAF6F1;">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-12">
+        <p class="overline mb-3">Transparentnost</p>
+        <h2 class="text-4xl md:text-5xl font-bold tracking-tight mb-4" style="color:#2C1A0E;">Nutritivna <span style="color:#C49A3C;font-style:italic;">vrednost</span>.</h2>
+      </div>
+      <div class="nutri-wrapper">
+        <div class="nutri-intro-lead">Laboratorijski analizirani nutritivni profil.</div>
+        <p class="nutri-intro-sub">Vrednosti su dobijene akreditovanom laboratorijskom analizom. Transparentno, precizno, bez skrivenih podataka.</p>
+        <div class="nutri-tables">
+          <div class="nutri-table-wrap">
+            <div class="nutri-table-title">Na 100 g proizvoda</div>
+            <table class="nutri-table">
+              <thead><tr><th>Nutritivna vrednost</th><th>Vrednost</th></tr></thead>
+              <tbody>
+                <tr class="nt-main"><td>Energetska vrednost</td><td>1788 kJ / 426 kcal</td></tr>
+                <tr class="nt-main"><td>Masti</td><td>17,74 g</td></tr>
+                <tr class="nt-sub"><td>od kojih zasićene masne kiseline</td><td>10,73 g</td></tr>
+                <tr class="nt-main"><td>Ugljeni hidrati</td><td>50,74 g</td></tr>
+                <tr class="nt-sub"><td>od kojih šećeri</td><td>3,65 g</td></tr>
+                <tr class="nt-main"><td>Proteini</td><td>15,85 g</td></tr>
+                <tr class="nt-main"><td>So</td><td>0,94 g</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="nutri-table-wrap">
+            <div class="nutri-table-title">Na porciju · 1 kesica (80 g)</div>
+            <table class="nutri-table">
+              <thead><tr><th>Nutritivna vrednost</th><th>Vrednost</th></tr></thead>
+              <tbody>
+                <tr class="nt-main"><td>Energetska vrednost</td><td>1430 kJ / 341 kcal</td></tr>
+                <tr class="nt-main"><td>Masti</td><td>14,19 g</td></tr>
+                <tr class="nt-sub"><td>od kojih zasićene masne kiseline</td><td>8,58 g</td></tr>
+                <tr class="nt-main"><td>Ugljeni hidrati</td><td>40,59 g</td></tr>
+                <tr class="nt-sub"><td>od kojih šećeri</td><td>2,92 g</td></tr>
+                <tr class="nt-main"><td>Proteini</td><td>12,68 g</td></tr>
+                <tr class="nt-main"><td>So</td><td>0,75 g</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="macro-bars" id="macroBars">
+          <div class="macro-bar-row"><div class="macro-bar-label">Ugljeni hidrati</div><div class="macro-bar-track"><div class="macro-bar-fill" style="width:0%" data-width="51%"></div></div><div class="macro-bar-val">50,74 g</div></div>
+          <div class="macro-bar-row"><div class="macro-bar-label">Masti</div><div class="macro-bar-track"><div class="macro-bar-fill" style="width:0%" data-width="18%"></div></div><div class="macro-bar-val">17,74 g</div></div>
+          <div class="macro-bar-row"><div class="macro-bar-label">Proteini</div><div class="macro-bar-track"><div class="macro-bar-fill" style="width:0%" data-width="16%"></div></div><div class="macro-bar-val">15,85 g</div></div>
+          <div class="macro-bar-row"><div class="macro-bar-label">So</div><div class="macro-bar-track"><div class="macro-bar-fill" style="width:0%" data-width="1%"></div></div><div class="macro-bar-val">0,94 g</div></div>
+        </div>
+        <p class="nutri-note" style="margin-top:28px;">* Vrednosti su dobijene laboratorijskom analizom. Sadržaj šećera (3,65 g) izračunat je konverzijom iz g/kg (36,49 g/kg). Energetska vrednost: 1788 kJ / 426 kcal na 100 g. Vrednosti po porciji izračunate su proporcionalno za 80 g.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="py-24 px-6" style="background-color:#FFF9F4;">
+    <div class="max-w-3xl mx-auto">
+      <div class="text-center mb-12">
+        <p class="overline mb-3">Imaš pitanje?</p>
+        <h2 class="text-4xl md:text-5xl font-bold tracking-tight mb-4" style="color:#2C1A0E;">Česta <span style="color:#C49A3C;font-style:italic;">pitanja</span>.</h2>
+      </div>
+      <div class="faq-list">
+        <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">Da li su Velbi kuglice zdrave kao desert?<span class="faq-arrow">↓</span></div><div class="faq-a">Da — Velbi se pravi bez rafinisanog šećera, bez veštačkih boja i aroma. Koristimo urme kao prirodni zaslađivač, pravu belgijsku tamnu čokoladu i whey isolate protein. To je desert koji radi nešto dobro za tvoje telo.</div></div>
+        <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">Koliko kuglica je jedna porcija?<span class="faq-arrow">↓</span></div><div class="faq-a">Jedna kesica sadrži 4 kuglice (80g). To je idealna porcija za međuobrok — dovoljna da zasiti, a ne previše da bi ugrozila tvoje nutritivne ciljeve.</div></div>
+        <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">Zašto je kolagen u hrani bolji od suplemenata?<span class="faq-arrow">↓</span></div><div class="faq-a">Kolagen kroz hranu je prirodniji i ugodniji za digestivni sistem. Telo ga lakše prepoznaje i apsorbuje kada dolazi u kombinaciji sa drugim nutrijentima — proteinima, mastima i prirodnim šećerima, baš kao u Velbi kuglicama.</div></div>
+        <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">Kada je idealno pojesti Velbi?<span class="faq-arrow">↓</span></div><div class="faq-a">Velbi je savršen pre ili posle treninga, kao popodnevni međuobrok, ili kad te napadne želja za slatkim. Bez griže savesti — to je wellbeing ritual koji funkcioniše u svakom trenutku dana.</div></div>
+        <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">Da li Velbi sadrži gluten?<span class="faq-arrow">↓</span></div><div class="faq-a">Velbi sadrži pahuljice zobi. Kuglice nisu certifikovane kao bezglutenske. Ako imaš celijakiju ili osetljivost na gluten, preporučujemo da se konsultuješ sa lekarom pre konzumacije.</div></div>
+        <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">Kako se čuvaju i koliko traju?<span class="faq-arrow">↓</span></div><div class="faq-a">Velbi kuglice čuvaj na hladnom i suvom mestu. Nakon otvaranja, preporučujemo čuvanje u frižideru i konzumaciju u roku od 7 dana. Rok trajanja neotvorene kesice naznačen je na pakovanju.</div></div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
 <!-- ════════════════ FOOTER ════════════════ -->
 <footer class="py-16 text-center flex flex-col items-center relative z-10"
-        style="background-color:#1F1209;color:#9a7a6a;font-size:14px;">
-    <h3 class="text-2xl font-bold mb-8" style="color:#FFF9F4;">Prati našu priču.</h3>
+        style="background-color:#FAF6F1;color:#5c4530;font-size:14px;">
+    <h3 class="text-2xl font-bold mb-8" style="color:#2C1A0E;">Prati našu priču.</h3>
     <div class="flex space-x-5 mb-12">
         <a href="https://www.instagram.com/__velbi__" target="_blank" rel="noopener" class="social-icon">
             <svg fill="currentColor" viewBox="0 0 24 24" class="w-6 h-6">
@@ -877,8 +1126,9 @@
             </svg>
         </a>
     </div>
-    <p class="text-3xl font-bold mb-3" style="font-family:'Playfair Display',serif;color:#FFF9F4;letter-spacing:-0.02em;">Velbi.</p>
+    <p class="text-3xl font-bold mb-3" style="font-family:'Playfair Display',serif;color:#2C1A0E;letter-spacing:-0.02em;">Velbi.</p>
     <p>&copy; 2026 Sva prava zadržana.</p>
+    <p class="mt-2"><a href="mailto:velbipro@gmail.com" style="color:#7a5c4a;">velbipro@gmail.com</a></p>
 </footer>
 
 <script>
@@ -905,10 +1155,37 @@
         modalContent.classList.add('scale-95', 'opacity-0');
         setTimeout(() => modal.classList.add('hidden'), 300);
     }
-    function submitForm(e) {
+    async function submitForm(e) {
         e.preventDefault();
-        formContainer.classList.add('hidden');
-        successMessage.classList.remove('hidden');
+        const form = e.target;
+        const btn  = document.getElementById('submitBtn');
+        btn.disabled    = true;
+        btn.textContent = 'Šaljem...';
+
+        const data = Object.fromEntries(new FormData(form));
+        data.replyto = data.email;
+        data.cc      = data.email;
+
+        try {
+            const res  = await fetch('https://api.web3forms.com/submit', {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body:    JSON.stringify(data)
+            });
+            const json = await res.json();
+            if (json.success) {
+                formContainer.classList.add('hidden');
+                successMessage.classList.remove('hidden');
+            } else {
+                alert('Došlo je do greške. Molimo pokušajte ponovo.');
+                btn.disabled    = false;
+                btn.textContent = 'Završi narudžbinu';
+            }
+        } catch {
+            alert('Greška mreže. Proverite konekciju i pokušajte ponovo.');
+            btn.disabled    = false;
+            btn.textContent = 'Završi narudžbinu';
+        }
     }
 
     /* ── Scroll fade-up ── */
@@ -917,68 +1194,56 @@
     }, { threshold: 0.10 });
     document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
 
+    /* ── Reveal animations ── */
+    const revealObs = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+    /* ── FAQ accordion ── */
+    function openInfoPage() {
+        const page = document.getElementById('infoPage');
+        document.querySelectorAll('.macro-bar-fill').forEach(b => { b.style.width = '0%'; });
+        page.style.display = 'block';
+        page.scrollTop = 0;
+        document.body.style.overflow = 'hidden';
+        requestAnimationFrame(() => { page.style.opacity = '1'; });
+        setTimeout(animateMacroBars, 400);
+    }
+    function closeInfoPage() {
+        const page = document.getElementById('infoPage');
+        page.style.opacity = '0';
+        document.body.style.overflow = '';
+        setTimeout(() => { page.style.display = 'none'; page.scrollTop = 0; }, 300);
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeInfoPage(); });
+
+    function toggleFaq(el) {
+        const isOpen = el.classList.contains('open');
+        document.querySelectorAll('.faq-item').forEach(fi => fi.classList.remove('open'));
+        if (!isOpen) el.classList.add('open');
+    }
+
+    /* ── Macro bar animation (triggers when nutrition section scrolls into view) ── */
+    function animateMacroBars() {
+        document.querySelectorAll('.macro-bar-fill').forEach(bar => {
+            const target = bar.getAttribute('data-width');
+            setTimeout(() => { bar.style.width = target; }, 80);
+        });
+    }
+    const nutritionSection = document.getElementById('nutritivna-vrednost');
+    if (nutritionSection) {
+        const macroObs = new IntersectionObserver((entries, obs) => {
+            entries.forEach(e => {
+                if (e.isIntersecting) { animateMacroBars(); obs.disconnect(); }
+            });
+        }, { threshold: 0.3 });
+        macroObs.observe(nutritionSection);
+    }
+
     /* ── Page fade-in ── */
     window.addEventListener('load', () => { document.body.style.opacity = '1'; });
 
-    /* ════ JS SCROLL SNAP ════
-       Strategy: let the browser scroll freely.
-       After scrolling stops (200 ms silence), find the snap point
-       whose top is closest to viewport top. If it is within 30 % of
-       the viewport height, glide to it. Works with mouse, trackpad,
-       keyboard and touch — no wheel-event blocking needed.
-    ════════════════════════════════════════════════════════════════ */
-    (function () {
-        const getSnaps = () =>
-            Array.from(document.querySelectorAll('.snap-group, footer'));
-
-        let snapping = false;
-        let timer    = null;
-
-        function snapToNearest() {
-            if (snapping) return;
-
-            /* Skip while modal is open */
-            const modal = document.getElementById('orderModal');
-            if (modal && !modal.classList.contains('hidden')) return;
-
-            const els = getSnaps();
-            const vh  = window.innerHeight;
-
-            /* Find snap point whose top edge is nearest to viewport top */
-            let best = null, bestDist = Infinity;
-            els.forEach(el => {
-                const dist = Math.abs(el.getBoundingClientRect().top);
-                if (dist < bestDist) { bestDist = dist; best = el; }
-            });
-
-            /* Only snap when within 30 % of viewport — avoids yanking the
-               user back while they're reading content deep inside a section */
-            if (best && bestDist > 6 && bestDist < vh * 0.30) {
-                snapping = true;
-                best.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                setTimeout(() => { snapping = false; }, 950);
-            }
-        }
-
-        /* Fires 200 ms after the last scroll event */
-        window.addEventListener('scroll', function () {
-            if (snapping) return;
-            clearTimeout(timer);
-            timer = setTimeout(snapToNearest, 200);
-        }, { passive: true });
-
-        /* Touch: after finger lifts, let momentum settle then snap */
-        let ty0 = 0;
-        window.addEventListener('touchstart',
-            e => { ty0 = e.touches[0].clientY; },
-            { passive: true });
-        window.addEventListener('touchend', function (e) {
-            if (snapping) return;
-            if (Math.abs(ty0 - e.changedTouches[0].clientY) < 20) return;
-            clearTimeout(timer);
-            setTimeout(snapToNearest, 320); /* let momentum settle */
-        }, { passive: true });
-    })();
 
     /* ── Mobile menu ── */
     function toggleMobileMenu() {
