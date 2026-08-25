@@ -1,0 +1,287 @@
+<!--
+  DEV NOTE (remove this comment before publishing):
+  This page is an AI-drafted refund/return policy template based on Serbia's
+  Zakon o zaštiti potrošača. Before going live:
+    1. Confirm the payment method(s) you actually offer (this draft assumes
+       cash on delivery / "pouzeće", the common default for this kind of
+       small online food business in Serbia).
+    2. Have a lawyer confirm the complaint-handling timelines and the
+       out-of-court dispute resolution stance before publishing.
+    3. Update the "Poslednja izmena" date whenever you edit this page.
+-->
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Velbi | Politika refundacije</title>
+    <meta name="description" content="Politika refundacije Velbi — kako funkcionišu reklamacije, povraćaj novca i pravo na odustanak od porudžbine.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* ── Base ── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; }
+        html { overflow-x: hidden; scroll-behavior: smooth; }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 17px;
+            line-height: 1.7;
+            color: #1F1209;
+            background-color: #FAF6F1;
+            -webkit-font-smoothing: antialiased;
+            opacity: 0;
+            transition: opacity .4s ease;
+            overflow-x: hidden;
+        }
+        h1, h2, h3, h4 { font-family: 'Playfair Display', serif; }
+
+        /* ── Nav ── */
+        .nav-blur {
+            background: rgba(250,246,241,.93);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+        }
+
+        /* ── Buttons ── */
+        .btn-dark {
+            display: inline-block;
+            background: #2C1A0E; color: #fff; border-radius: 50px;
+            padding: 12px 28px; font-weight: 600; font-family: 'DM Sans',sans-serif;
+            font-size: 14px; border: none; cursor: pointer; text-decoration: none;
+            transition: background .2s, transform .2s;
+        }
+        .btn-dark:hover { background: #1a0f07; transform: translateY(-2px); }
+
+        /* ── Reveal animation ── */
+        .reveal {
+            opacity: 0;
+            transform: translateY(22px);
+            transition: opacity .55s ease, transform .55s ease;
+        }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+
+        /* ── Social ── */
+        .social-icon {
+            width: 56px; height: 56px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            background: #2C1A0E; border: 1px solid #3d2214; color: #9a7a6a;
+            transition: all .3s;
+        }
+        .social-icon:hover {
+            background: #B5651D; border-color: #B5651D; color: #fff;
+            transform: translateY(-3px); box-shadow: 0 0 22px rgba(181,101,29,.35);
+        }
+
+        /* ════════════════ PAGE HERO ════════════════ */
+        .page-hero {
+            position: relative;
+            padding: 130px 24px 64px;
+            text-align: center;
+            overflow: hidden;
+            background: #2C1A0E;
+        }
+        .page-hero-logo {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%,-50%);
+            width: 120%; opacity: .10;
+            mix-blend-mode: screen;
+            pointer-events: none;
+        }
+        .page-hero-inner { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; }
+        .ph-tag {
+            display: block;
+            font-size: 11px; font-weight: 700; letter-spacing: .22em;
+            text-transform: uppercase; color: #D4A5A0;
+            font-family: 'DM Sans',sans-serif; margin-bottom: 18px;
+        }
+        .page-hero h1 {
+            font-size: clamp(32px,5.5vw,52px);
+            color: #FFF9F4; letter-spacing: -.02em; line-height: 1.15;
+            margin-bottom: 14px;
+        }
+        .page-hero p { font-size: 17px; color: rgba(255,249,244,.65); line-height: 1.7; }
+
+        /* ════════════════ LEGAL CONTENT ════════════════ */
+        .legal-section { padding: 64px 24px 100px; }
+        .legal-inner { max-width: 780px; margin: 0 auto; }
+        .legal-updated {
+            font-size: 13px; color: #9a7a6a; margin-bottom: 36px;
+            padding-bottom: 20px; border-bottom: 1px solid #E8D5C4;
+        }
+        .legal-toc {
+            display: flex; flex-wrap: wrap; gap: 8px 20px;
+            margin-bottom: 48px; padding: 18px 22px;
+            background: #FFF9F4; border: 1px solid #E8D5C4; border-radius: 16px;
+        }
+        .legal-toc a { font-size: 13.5px; color: #7a5c4a; text-decoration: none; }
+        .legal-toc a:hover { color: #B5651D; }
+        .legal-block { margin-bottom: 34px; scroll-margin-top: 90px; }
+        .legal-block h2 { font-size: 21px; color: #2C1A0E; margin-bottom: 12px; letter-spacing: -.01em; }
+        .legal-block p { font-size: 15.5px; color: #4a3020; line-height: 1.8; margin-bottom: 12px; }
+        .legal-block ul { margin: 0 0 12px 0; padding-left: 22px; display: flex; flex-direction: column; gap: 7px; }
+        .legal-block li { font-size: 15.5px; color: #4a3020; line-height: 1.75; }
+        .legal-block a { color: #B5651D; }
+        .legal-callout {
+            display: flex; gap: 14px; align-items: flex-start;
+            background: #FFF9F4; border: 1px solid #E8D5C4;
+            border-left: 4px solid #B5651D; border-radius: 14px;
+            padding: 18px 20px; margin: 4px 0 22px;
+            font-size: 14.5px; color: #4a3020; line-height: 1.75;
+        }
+        .legal-callout-icon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+    </style>
+</head>
+<body>
+
+<!-- ════════════════ NAV ════════════════ -->
+<nav class="fixed w-full top-0 nav-blur z-50 border-b border-[#E8D5C4]">
+    <div class="max-w-6xl mx-auto px-6 py-3 flex justify-between items-center">
+        <a href="index.html">
+            <img src="velbi-logo.png" alt="Velbi Logo" class="h-14 md:h-16 object-contain"
+                 onerror="this.outerHTML='<span style=\'font-family:Playfair Display,serif;font-size:1.75rem;font-weight:700;color:#2C1A0E;\'>Velbi</span>'">
+        </a>
+        <div class="hidden md:flex space-x-8 text-sm font-medium" style="color:#7a5c4a;">
+            <a href="index.html#sastojci"          class="hover:text-[#B5651D] transition">Sastojci</a>
+            <a href="index.html#kome-je-namenjeno" class="hover:text-[#B5651D] transition">Za koga</a>
+            <a href="saznaj-vise.html"             class="hover:text-[#B5651D] transition">Saznaj više</a>
+        </div>
+        <a href="index.html#naruci" class="btn-dark">Naruči odmah</a>
+    </div>
+</nav>
+
+<!-- ════════════════ PAGE HERO ════════════════ -->
+<div class="page-hero reveal">
+    <img src="velbi-logo.png" alt="" class="page-hero-logo" onerror="this.style.display='none'">
+    <div class="page-hero-inner">
+        <span class="ph-tag">Pravne informacije</span>
+        <h1>Politika refundacije</h1>
+        <p>Kako funkcionišu reklamacije i povraćaj novca za Velbi proizvode.</p>
+    </div>
+</div>
+
+<!-- ════════════════ LEGAL CONTENT ════════════════ -->
+<section class="legal-section">
+  <div class="legal-inner">
+
+    <p class="legal-updated reveal">Poslednja izmena: 25. avgust 2026.</p>
+
+    <nav class="legal-toc reveal" aria-label="Sadržaj">
+        <a href="#uvod">1. Uvod</a>
+        <a href="#priroda-proizvoda">2. Priroda proizvoda i pravo na odustanak</a>
+        <a href="#reklamacije">3. Saobraznost robe i reklamacije</a>
+        <a href="#rok-prijave">4. Kako i kada prijaviti problem</a>
+        <a href="#postupak">5. Postupak i rokovi</a>
+        <a href="#povracaj">6. Povraćaj novca</a>
+        <a href="#otkazivanje">7. Otkazivanje porudžbine</a>
+        <a href="#vansudsko">8. Vansudsko rešavanje spora</a>
+        <a href="#kontakt">9. Kontakt</a>
+    </nav>
+
+    <div class="legal-block reveal" id="uvod">
+        <h2>1. Uvod</h2>
+        <p>Ova politika objašnjava vaša prava u vezi sa reklamacijama i povraćajem novca za proizvode naručene preko sajta Velbi, u skladu sa Zakonom o zaštiti potrošača Republike Srbije. Trudimo se da svaka porudžbina stigne sveža i u ispravnom stanju — ako nešto pođe po zlu, ovde je opisano šta sledi.</p>
+    </div>
+
+    <div class="legal-block reveal" id="priroda-proizvoda">
+        <h2>2. Priroda proizvoda i pravo na odustanak</h2>
+        <p>Velbi proizvodi su sveže, ručno pravljene proteinske kuglice sa kratkim rokom trajanja. Zakon o zaštiti potrošača izuzima od opšteg prava na odustanak od ugovora (u roku od 14 dana) upravo robu koja je podložna brzom kvarenju ili kojoj brzo ističe rok upotrebe.</p>
+        <div class="legal-callout">
+            <span class="legal-callout-icon">ℹ️</span>
+            <div>Zbog toga se standardno pravo na odustanak "zato što sam se predomislio/la" ne primenjuje na naše proizvode. I dalje, međutim, u potpunosti važi vaše pravo na reklamaciju ako je proizvod neispravan, oštećen, pokvaren ili pogrešan — pogledajte sledeći odeljak.</div>
+        </div>
+    </div>
+
+    <div class="legal-block reveal" id="reklamacije">
+        <h2>3. Saobraznost robe i reklamacije</h2>
+        <p>Imate pravo da uložite reklamaciju ukoliko je isporučeni proizvod:</p>
+        <ul>
+            <li>oštećen prilikom transporta;</li>
+            <li>pokvaren, neispravan ili neuobičajenog kvaliteta u trenutku prijema;</li>
+            <li>drugačiji od onoga što ste naručili (pogrešan proizvod ili količina);</li>
+            <li>isporučen sa isteklim ili neispravno deklarisanim rokom trajanja.</li>
+        </ul>
+        <p>U tim slučajevima imate pravo na zamenu proizvoda, povraćaj novca ili umanjenje cene, u skladu sa Zakonom o zaštiti potrošača.</p>
+    </div>
+
+    <div class="legal-block reveal" id="rok-prijave">
+        <h2>4. Kako i kada prijaviti problem</h2>
+        <p>Budući da su proizvodi sveži i podložni kvarenju, molimo vas da eventualni problem prijavite što pre, a najkasnije u roku od 48 sati od prijema pošiljke. Ako je pošiljka vidljivo oštećena prilikom preuzimanja od kurira, po mogućstvu to naznačite kuriru pri preuzimanju.</p>
+        <p>Reklamaciju prijavljujete slanjem emaila na <a href="mailto:velbipro@gmail.com">velbipro@gmail.com</a>, sa sledećim informacijama:</p>
+        <ul>
+            <li>broj/datum porudžbine i ime na koje je porudžbina glasila;</li>
+            <li>kratak opis problema;</li>
+            <li>fotografija proizvoda koja jasno prikazuje problem.</li>
+        </ul>
+    </div>
+
+    <div class="legal-block reveal" id="postupak">
+        <h2>5. Postupak i rokovi za rešavanje reklamacije</h2>
+        <p>Na svaku reklamaciju odgovaramo bez odlaganja, a najkasnije u zakonom propisanom roku od dana prijema reklamacije. U odgovoru vas obaveštavamo da li reklamaciju prihvatamo, kao i konkretan predlog i rok za njeno rešavanje. Rešavanje prihvaćene reklamacije (zamena, povraćaj novca ili umanjenje cene) sprovodimo u najkraćem mogućem roku, u skladu sa Zakonom o zaštiti potrošača.</p>
+    </div>
+
+    <div class="legal-block reveal" id="povracaj">
+        <h2>6. Povraćaj novca</h2>
+        <p>Ukoliko je reklamacija prihvaćena i dogovoren je povraćaj novca, sredstva vraćamo na način koji dogovorimo sa vama (npr. uplatom na tekući račun), u najkraćem mogućem roku. Ako je porudžbina plaćena pouzećem, povraćaj se vrši uplatom na račun koji nam dostavite.</p>
+    </div>
+
+    <div class="legal-block reveal" id="otkazivanje">
+        <h2>7. Otkazivanje porudžbine pre slanja</h2>
+        <p>Ako želite da otkažete porudžbinu pre nego što je poslata na dostavu, javite nam se što pre na <a href="mailto:velbipro@gmail.com">velbipro@gmail.com</a> — s obzirom da proizvode pravimo sveže po porudžbini, otkazivanje je moguće samo dok porudžbina nije ušla u pripremu ili dostavu.</p>
+    </div>
+
+    <div class="legal-block reveal" id="vansudsko">
+        <h2>8. Vansudsko rešavanje spora</h2>
+        <p>Ukoliko smatrate da vaš prigovor nismo rešili na zadovoljavajući način, imate pravo da pokrenete postupak vansudskog rešavanja potrošačkog spora pred nadležnim telom, u skladu sa Zakonom o zaštiti potrošača. Spisak tela registrovanih za vansudsko rešavanje potrošačkih sporova dostupan je na sajtu Ministarstva unutrašnje i spoljne trgovine Republike Srbije.</p>
+    </div>
+
+    <div class="legal-block reveal" id="kontakt">
+        <h2>9. Kontakt</h2>
+        <p>Za sve reklamacije i pitanja u vezi sa povraćajem novca, pišite nam na <a href="mailto:velbipro@gmail.com">velbipro@gmail.com</a>.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ════════════════ FOOTER ════════════════ -->
+<footer class="py-16 border-t text-center flex flex-col items-center"
+        style="background:#1F1209;border-color:#2C1A0E;color:#9a7a6a;font-size:14px;">
+    <h3 class="text-2xl font-bold mb-8" style="color:#FFF9F4;">Prati našu priču.</h3>
+    <div class="flex space-x-5 mb-12">
+        <a href="https://www.instagram.com/__velbi__" target="_blank" rel="noopener" class="social-icon">
+            <svg fill="currentColor" viewBox="0 0 24 24" class="w-6 h-6">
+                <path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clip-rule="evenodd"/>
+            </svg>
+        </a>
+        <a href="https://www.tiktok.com/@_velbi" target="_blank" rel="noopener" class="social-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+            </svg>
+        </a>
+    </div>
+    <p>&copy; 2026 VELBI</p>
+    <p class="mt-2"><a href="mailto:velbipro@gmail.com" style="color:#9a7a6a;">velbipro@gmail.com</a></p>
+    <p class="mt-4 flex flex-wrap justify-center gap-x-2 gap-y-1 text-xs">
+        <a href="politika-privatnosti.html" class="hover:text-[#B5651D] transition">Politika privatnosti</a>
+        <span>·</span>
+        <a href="politika-refundacije.html" class="hover:text-[#B5651D] transition">Politika refundacije</a>
+        <span>·</span>
+        <a href="uslovi-koriscenja.html" class="hover:text-[#B5651D] transition">Uslovi korišćenja</a>
+    </p>
+</footer>
+
+<script>
+    /* ── Page fade-in ── */
+    window.addEventListener('load', () => { document.body.style.opacity = '1'; });
+
+    /* ── Reveal animations ── */
+    const revealObs = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+</script>
+
+</body>
+</html>

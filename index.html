@@ -743,7 +743,7 @@
                     To je tvoj <em style="color:#C49A3C;font-style:italic;">svakodnevni<br>ritual.</em>
                 </h2>
                 <p style="color:#7a5c4a;font-size:16px;line-height:1.8;margin-bottom:30px;max-width:440px;">
-                    Velbi kuglice su za ljude koji vode računa o zdravlju, koži i izgledu — bez teretane, bez komplikacija. Protein i kolagen rade zajedno za tvoje telo, iznutra.
+                    Velbi kuglice su za sve koji vode računa o zdravlju, koži i izgledu, bez obzira da li idu u teretanu. Samo otvoriš, pojedeš, i protein i kolagen rade svoje — iznutra.
                 </p>
                 <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:15px;">
                     <li style="display:flex;align-items:center;gap:13px;font-size:15px;color:#4a3020;">
@@ -1123,9 +1123,15 @@
             </svg>
         </a>
     </div>
-    <p class="text-3xl font-bold mb-3" style="font-family:'Playfair Display',serif;color:#2C1A0E;letter-spacing:-0.02em;">Velbi.</p>
-    <p>&copy; 2026 Sva prava zadržana.</p>
+    <p>&copy; 2026 VELBI</p>
     <p class="mt-2"><a href="mailto:velbipro@gmail.com" style="color:#7a5c4a;">velbipro@gmail.com</a></p>
+    <p class="mt-4 flex flex-wrap justify-center gap-x-2 gap-y-1 text-xs" style="color:#9a7a6a;">
+        <a href="politika-privatnosti.html" class="hover:text-[#B5651D] transition">Politika privatnosti</a>
+        <span>·</span>
+        <a href="politika-refundacije.html" class="hover:text-[#B5651D] transition">Politika refundacije</a>
+        <span>·</span>
+        <a href="uslovi-koriscenja.html" class="hover:text-[#B5651D] transition">Uslovi korišćenja</a>
+    </p>
 </footer>
 
 <script>
@@ -1217,9 +1223,9 @@
 
         const raw  = new FormData(form);
         const data = new FormData();
-        data.append('Ime i prezime', raw.get('Ime i prezime'));
-        data.append('Telefon',       raw.get('Telefon'));
-        data.append('Email kupca',   raw.get('email'));
+        data.append('Kupac',   raw.get('Ime i prezime'));
+        data.append('Telefon', raw.get('Telefon'));
+        data.append('Email',   raw.get('email'));
         data.append('Adresa',        raw.get('Adresa'));
         data.append('Paket',         raw.get('Paket'));
         data.append('_subject',      'Nova narudžbina — Velbi');
