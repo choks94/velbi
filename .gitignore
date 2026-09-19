@@ -1,0 +1,4 @@
+# Created on the server, never committed: admin password hash and coupon data.
+includes/config.php
+data/*
+!data/.htaccess
