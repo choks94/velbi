@@ -6,6 +6,12 @@
       "runtimeExecutable": "npx",
       "runtimeArgs": ["serve", "-l", "4444", "."],
       "port": 4444
+    },
+    {
+      "name": "velbi-php",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": ["-c", "exec docker run --rm --name velbi-php -p 127.0.0.1:4445:80 -v \"$PWD\":/var/www/html php:8.3-apache"],
+      "port": 4445
     }
   ]
 }

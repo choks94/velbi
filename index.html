@@ -102,6 +102,15 @@
             .snap-split .split-photo { flex: 0 0 50%; height: 50vh; }
         }
 
+        /* ── Order modal: scroll inside instead of clipping on short screens ── */
+        #modalContent {
+            max-height: calc(100vh - 2rem);
+            max-height: calc(100dvh - 2rem);
+            overflow-y: auto;
+            overscroll-behavior: contain;
+        }
+        #couponInput::placeholder { text-transform: none; }
+
         /* ── Nav ── */
         .nav-blur {
             background: rgba(250, 246, 241, 0.93);
@@ -597,10 +606,31 @@
                     <select name="Paket" required class="w-full rounded-xl p-3.5 outline-none cursor-pointer"
                             style="background:#FAF6F1;border:1px solid #E8D5C4;color:#1F1209;font-family:'DM Sans',sans-serif;">
                         <option value="">Izaberi opciju...</option>
-                        <option value="1 Kesica (Tamna čokolada) — 420 din">1 Kesica (Tamna čokolada) — 420 din</option>
-                        <option value="Paket od 6 kesica — 2.390 din">Paket od 6 kesica — 2.390 din</option>
-                        <option value="Paket od 12 kesica — 4.790 din">Paket od 12 kesica — 4.790 din</option>
+                        <option value="1 Kesica (Tamna čokolada) — 420 din" data-price="420">1 Kesica (Tamna čokolada) — 420 din</option>
+                        <option value="Paket od 6 kesica — 2.390 din" data-price="2390">Paket od 6 kesica — 2.390 din</option>
+                        <option value="Paket od 12 kesica — 4.790 din" data-price="4790">Paket od 12 kesica — 4.790 din</option>
                     </select>
+                </div>
+                <div>
+                    <label for="couponInput" class="block text-sm font-semibold mb-1" style="color:#2C1A0E;">Kupon kod <span class="font-normal" style="color:#9a7a6a;">(opciono)</span></label>
+                    <div class="flex gap-2">
+                        <input type="text" id="couponInput" maxlength="32" placeholder="Unesi kod"
+                               autocomplete="off" autocapitalize="characters" spellcheck="false"
+                               class="flex-1 min-w-0 rounded-xl p-3.5 outline-none uppercase"
+                               style="background:#FAF6F1;border:1px solid #E8D5C4;color:#1F1209;font-family:'DM Sans',sans-serif;">
+                        <button type="button" id="couponBtn" class="btn-outline" style="border-radius:12px;padding:0 22px;">Primeni</button>
+                    </div>
+                    <p id="couponMsg" class="hidden" style="font-size:12px;margin-top:5px;" aria-live="polite"></p>
+                </div>
+                <div id="priceSummary" class="hidden rounded-xl text-sm" style="background:#FAF6F1;border:1px solid #E8D5C4;padding:14px 16px;">
+                    <div id="sumBreakdown" class="hidden" style="border-bottom:1px solid #E8D5C4;padding-bottom:8px;margin-bottom:8px;">
+                        <div class="flex justify-between" style="color:#7a5c4a;"><span>Cena paketa</span><span id="sumPrice"></span></div>
+                        <div class="flex justify-between" style="color:#6B8F71;"><span id="sumDiscountLabel"></span><span id="sumDiscount"></span></div>
+                    </div>
+                    <div class="flex justify-between items-baseline" style="color:#2C1A0E;">
+                        <span class="font-semibold">Ukupno</span>
+                        <span><strong id="sumTotal" style="font-size:18px;"></strong> <span class="text-xs" style="color:#9a7a6a;">+ dostava</span></span>
+                    </div>
                 </div>
                 <button type="submit" id="submitBtn" class="btn-caramel w-full mt-2" style="border-radius:12px;padding:16px 0;">
                     Završi narudžbinu
@@ -1153,6 +1183,10 @@
         successMessage.classList.add('hidden');
         orderForm.reset();
         clearAllErrors();
+        resetCoupon();
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled    = false;  // stays disabled after a successful order otherwise
+        submitBtn.textContent = 'Završi narudžbinu';
     }
     function closeModal() {
         modalBackdrop.classList.add('opacity-0');
@@ -1213,6 +1247,82 @@
         orderForm.querySelector(sel).addEventListener('input', function () { clearErr(this); });
     });
 
+    /* ── Coupon code & price summary ── */
+    const packageSelect = orderForm.querySelector('[name="Paket"]');
+    const couponInput   = document.getElementById('couponInput');
+    const couponMsg     = document.getElementById('couponMsg');
+    let appliedCoupon   = null;  // { code, percent } — only ever set from the server's answer
+    let couponRequest   = 0;     // bumped on every check/edit so stale answers are ignored
+
+    function formatDin(n) {
+        return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' din';
+    }
+    function orderPrice() {
+        const price = Number(packageSelect.selectedOptions[0]?.dataset.price);
+        if (!price) return null;
+        const discount = appliedCoupon ? Math.round(price * appliedCoupon.percent / 100) : 0;
+        return { price, discount, total: price - discount };
+    }
+    function renderPrice() {
+        const p = orderPrice();
+        document.getElementById('priceSummary').classList.toggle('hidden', !p);
+        if (!p) return;
+        document.getElementById('sumBreakdown').classList.toggle('hidden', !appliedCoupon);
+        if (appliedCoupon) {
+            document.getElementById('sumPrice').textContent         = formatDin(p.price);
+            document.getElementById('sumDiscountLabel').textContent = `Popust ${appliedCoupon.code} (−${appliedCoupon.percent}%)`;
+            document.getElementById('sumDiscount').textContent      = '−' + formatDin(p.discount);
+        }
+        document.getElementById('sumTotal').textContent = formatDin(p.total);
+    }
+    const COUPON_TONES = { info: '#9a7a6a', ok: '#6B8F71', error: '#c0392b' };
+    function setCouponMsg(text, tone) {
+        couponMsg.textContent = text;
+        couponMsg.style.color = COUPON_TONES[tone] || '';
+        couponMsg.classList.toggle('hidden', !text);
+        couponInput.style.border = '1px solid ' + (tone === 'error' ? COUPON_TONES.error : '#E8D5C4');
+    }
+    function resetCoupon() {
+        couponRequest++;
+        appliedCoupon = null;
+        setCouponMsg('');
+        renderPrice();
+    }
+    /* Asks the server whether the typed code is valid; resolves to true when a discount is applied. */
+    async function applyCoupon() {
+        const code = couponInput.value.trim().toUpperCase();
+        resetCoupon();
+        const req = couponRequest;
+        if (!code) { setCouponMsg('Unesite kupon kod.', 'error'); return false; }
+
+        setCouponMsg('Proveravam kupon...', 'info');
+        let result = null;
+        try {
+            const res = await fetch('api/coupon.php', { method: 'POST', body: new URLSearchParams({ code }) });
+            if (res.ok) result = await res.json();
+        } catch { /* handled below */ }
+        if (req !== couponRequest) return false;  // code was edited or re-checked meanwhile
+
+        if (!result) {
+            setCouponMsg('Provera kupona trenutno nije moguća. Pokušajte ponovo ili obrišite kod.', 'error');
+            return false;
+        }
+        if (!result.valid) {
+            setCouponMsg('Kupon kod nije važeći.', 'error');
+            return false;
+        }
+        appliedCoupon = { code: result.code, percent: result.percent };
+        setCouponMsg(`Kupon ${result.code} je primenjen — ${result.percent}% popusta.`, 'ok');
+        renderPrice();
+        return true;
+    }
+    document.getElementById('couponBtn').addEventListener('click', applyCoupon);
+    couponInput.addEventListener('keydown', e => {
+        if (e.key === 'Enter') { e.preventDefault(); applyCoupon(); }
+    });
+    couponInput.addEventListener('input', resetCoupon);
+    packageSelect.addEventListener('change', renderPrice);
+
     async function submitForm(e) {
         e.preventDefault();
         if (!validateForm()) return;
@@ -1221,6 +1331,14 @@
         btn.disabled    = true;
         btn.textContent = 'Šaljem...';
 
+        // Re-check any entered code right before sending, so the order never carries an unverified discount.
+        if (couponInput.value.trim() && !(await applyCoupon())) {
+            btn.disabled    = false;
+            btn.textContent = 'Završi narudžbinu';
+            couponInput.focus();
+            return;
+        }
+
         const raw  = new FormData(form);
         const data = new FormData();
         data.append('Kupac',   raw.get('Ime i prezime'));
@@ -1228,6 +1346,12 @@
         data.append('Email',   raw.get('email'));
         data.append('Adresa',        raw.get('Adresa'));
         data.append('Paket',         raw.get('Paket'));
+        const price = orderPrice();
+        if (appliedCoupon && price) {
+            data.append('Kupon',            `${appliedCoupon.code} (−${appliedCoupon.percent}%)`);
+            data.append('Popust',           '−' + formatDin(price.discount));
+            data.append('Cena sa popustom', formatDin(price.total) + ' + dostava');
+        }
         data.append('_subject',      'Nova narudžbina — Velbi');
         data.append('_cc',           raw.get('email'));
         data.append('_captcha',      'false');
