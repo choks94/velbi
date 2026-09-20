@@ -1308,7 +1308,7 @@
             return false;
         }
         if (!result.valid) {
-            setCouponMsg('Kupon kod nije važeći.', 'error');
+            setCouponMsg(result.reason === 'expired' ? 'Ovaj kupon je istekao.' : 'Kupon kod nije važeći.', 'error');
             return false;
         }
         appliedCoupon = { code: result.code, percent: result.percent };
@@ -1322,6 +1322,18 @@
     });
     couponInput.addEventListener('input', resetCoupon);
     packageSelect.addEventListener('change', renderPrice);
+
+    /* Anonymous sales stats for the admin panel — only package, price and coupon, no customer data.
+       Best-effort: nothing here may disturb an order that has already been sent. */
+    function recordOrder(pkg, price, couponCode) {
+        try {
+            fetch('api/order.php', {
+                method:    'POST',
+                keepalive: true,
+                body:      new URLSearchParams({ package: pkg, price, coupon: couponCode }),
+            }).catch(() => {});
+        } catch { /* ignore */ }
+    }
 
     async function submitForm(e) {
         e.preventDefault();
@@ -1366,6 +1378,7 @@
             if (json.success) {
                 formContainer.classList.add('hidden');
                 successMessage.classList.remove('hidden');
+                if (price) recordOrder(raw.get('Paket'), price.price, appliedCoupon ? appliedCoupon.code : '');
             } else {
                 alert('Došlo je do greške. Molimo pokušajte ponovo.');
                 btn.disabled    = false;
