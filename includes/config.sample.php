@@ -10,6 +10,12 @@ return [
     //   htpasswd -nBC 12 "" | tr -d ':\n'
     'admin_password_hash' => '',
 
-    // Optional: folder for coupon data. Defaults to data/ next to this folder.
-    // 'data_dir' => '/home/u123456789/domains/velbi.shop/velbi-data',
+    // MySQL database from hPanel → Databases → Management.
+    // The tables are created automatically the first time /admin/ is opened.
+    'db' => [
+        'host'     => 'localhost',
+        'name'     => '',  // e.g. u123456789_velbi
+        'user'     => '',  // e.g. u123456789_velbi
+        'password' => '',
+    ],
 ];

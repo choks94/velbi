@@ -1,17 +1,15 @@
 <?php
 /*
- * Shared code for the coupon backend (admin/ panel and api/ endpoint).
+ * Shared code for the coupon backend (admin/ panel and api/ endpoints).
  *
- * Data lives in small JSON files inside data/. Each file starts with a PHP
- * exit guard, so even if the server ignored data/.htaccess, requesting the
- * file over HTTP would run the guard and return nothing.
+ * Coupons and the anonymous order log for the stats live in the site's MySQL
+ * database (hPanel → Databases). The connection details and the admin password
+ * hash come from config.php.
  */
 declare(strict_types=1);
 
 ini_set('display_errors', '0');
 date_default_timezone_set('Europe/Belgrade');
-
-const STORE_GUARD = "<?php exit; ?>\n";
 
 /* ── Config ── */
 
@@ -31,76 +29,92 @@ function admin_password_hash(): string
     return (string) (app_config()['admin_password_hash'] ?? '');
 }
 
-/* ── Storage ── */
-
-function data_dir(): string
-{
-    return rtrim((string) (app_config()['data_dir'] ?? dirname(__DIR__) . '/data'), '/');
-}
-
-function store_path(string $name): string
-{
-    return data_dir() . '/' . $name . '.php';
-}
-
-function store_read(string $name): array
-{
-    $path = store_path($name);
-    if (!is_file($path)) {
-        return [];
-    }
-    $raw = file_get_contents($path);
-    if ($raw === false) {
-        throw new RuntimeException("Cannot read store '$name'");
-    }
-    if (strncmp($raw, STORE_GUARD, strlen(STORE_GUARD)) === 0) {
-        $raw = substr($raw, strlen(STORE_GUARD));
-    }
-    $data = json_decode($raw, true);
-    if (!is_array($data)) {
-        throw new RuntimeException("Store '$name' is corrupt");
-    }
-    return $data;
-}
-
-/**
- * Read-modify-write under an exclusive lock. $mutate receives the data by
- * reference; its return value is passed through. The file is replaced via
- * rename, so readers never see a half-written store.
- */
-function store_update(string $name, callable $mutate)
-{
-    $dir = data_dir();
-    if (!is_dir($dir) && !mkdir($dir, 0755, true) && !is_dir($dir)) {
-        throw new RuntimeException("Cannot create data directory $dir");
-    }
-    $lock = fopen("$dir/$name.lock", 'c');
-    if ($lock === false || !flock($lock, LOCK_EX)) {
-        throw new RuntimeException("Cannot lock store '$name'");
-    }
-    try {
-        $data   = store_read($name);
-        $result = $mutate($data);
-        $json   = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG);
-        $tmp    = "$dir/$name." . bin2hex(random_bytes(6)) . '.tmp.php';
-        if ($json === false
-            || file_put_contents($tmp, STORE_GUARD . $json . "\n") === false
-            || !rename($tmp, store_path($name))) {
-            @unlink($tmp);
-            throw new RuntimeException("Cannot write store '$name'");
-        }
-        return $result;
-    } finally {
-        flock($lock, LOCK_UN);
-        fclose($lock);
-    }
-}
-
-/* ── Coupons ── */
-// Stored as a list: [{ "code": "VELBI10", "percent": 10, "active": true, "created_at": "..." }]
+/* ── Database ── */
 
 const COUPON_MIN_PERCENT = 1;
 const COUPON_MAX_PERCENT = 100;
+
+function db_configured(): bool
+{
+    $db = app_config()['db'] ?? null;
+    return is_array($db) && ($db['name'] ?? '') !== '' && ($db['user'] ?? '') !== '';
+}
+
+function db(): PDO
+{
+    static $pdo = null;
+    if ($pdo === null) {
+        // Fail fast instead of stalling checkout if MySQL hangs: ATTR_TIMEOUT only covers the
+        // TCP connect, this covers every read after it (default is a whole day).
+        ini_set('mysqlnd.net_read_timeout', '5');
+        $db  = app_config()['db'] ?? [];
+        $pdo = new PDO(
+            'mysql:host=' . ($db['host'] ?? 'localhost') . ';dbname=' . ($db['name'] ?? '') . ';charset=utf8mb4',
+            (string) ($db['user'] ?? ''),
+            (string) ($db['password'] ?? ''),
+            [
+                PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::ATTR_EMULATE_PREPARES   => false,
+                PDO::ATTR_TIMEOUT            => 5,     // connect timeout, seconds
+                PDO::MYSQL_ATTR_FOUND_ROWS   => true,  // rowCount() counts matched rows, so "unchanged" isn't "missing"
+            ]
+        );
+        $pdo->exec("SET time_zone = '" . date('P') . "'");  // NOW() in shop time
+    }
+    return $pdo;
+}
+
+/** Creates the tables if they don't exist yet; safe to run on every admin request. */
+function db_ensure_schema(): void
+{
+    // valid_until is the last day a coupon can be used (inclusive); NULL means no end date.
+    db()->exec(sprintf(
+        'CREATE TABLE IF NOT EXISTS coupons (
+            id          INT UNSIGNED     NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            code        VARCHAR(32)      NOT NULL,
+            percent     TINYINT UNSIGNED NOT NULL,
+            valid_until DATE             NULL,
+            active      TINYINT(1)       NOT NULL DEFAULT 1,
+            created_at  DATETIME         NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE KEY uq_coupons_code (code),
+            CONSTRAINT chk_coupons_percent CHECK (percent BETWEEN %d AND %d)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci',
+        COUPON_MIN_PERCENT,
+        COUPON_MAX_PERCENT
+    ));
+    db()->exec(
+        'CREATE TABLE IF NOT EXISTS admin_login_attempts (
+            ip_hash  CHAR(64)     NOT NULL PRIMARY KEY,
+            failures INT UNSIGNED NOT NULL,
+            first_at DATETIME     NOT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=ascii'
+    );
+    // One row per order sent through the site, for the admin stats. No customer data.
+    // coupon_code/coupon_percent are snapshots, so history survives renaming or deleting a coupon.
+    db()->exec(
+        'CREATE TABLE IF NOT EXISTS orders (
+            id             INT UNSIGNED     NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            created_at     DATETIME         NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            package        VARCHAR(100)     NOT NULL,
+            price          INT UNSIGNED     NOT NULL,
+            coupon_id      INT UNSIGNED     NULL,
+            coupon_code    VARCHAR(32)      NULL,
+            coupon_percent TINYINT UNSIGNED NULL,
+            discount       INT UNSIGNED     NOT NULL DEFAULT 0,
+            total          INT UNSIGNED     NOT NULL,
+            KEY idx_orders_created (created_at),
+            CONSTRAINT fk_orders_coupon FOREIGN KEY (coupon_id) REFERENCES coupons (id) ON DELETE SET NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci'
+    );
+}
+
+function db_is_duplicate(PDOException $e): bool
+{
+    return (int) ($e->errorInfo[1] ?? 0) === 1062;  // ER_DUP_ENTRY
+}
+
+/* ── Coupons ── */
 
 function coupon_normalize(string $code): string
 {
@@ -112,21 +126,40 @@ function coupon_code_is_valid(string $code): bool
     return preg_match('/^[A-Z0-9_-]{3,32}$/', $code) === 1;
 }
 
-function coupon_index(array $coupons, string $code): ?int
+/**
+ * An active coupon as ['percent' => int, 'expired' => bool], or null. It counts as expired once
+ * its valid_until day is over (shop time). The column collation is case-insensitive, so codes
+ * typed in lowercase in phpMyAdmin still match.
+ */
+function coupon_lookup(string $code): ?array
 {
-    foreach ($coupons as $i => $coupon) {
-        if ($coupon['code'] === $code) {
-            return $i;
-        }
-    }
-    return null;
+    $stmt = db()->prepare('SELECT percent, valid_until IS NOT NULL AND valid_until < CURDATE() AS expired
+                           FROM coupons WHERE code = ? AND active = 1 AND percent BETWEEN ? AND ?');
+    $stmt->execute([$code, COUPON_MIN_PERCENT, COUPON_MAX_PERCENT]);
+    $row = $stmt->fetch();
+    return $row === false ? null : ['percent' => (int) $row['percent'], 'expired' => (bool) $row['expired']];
 }
 
-function coupon_find_active(string $code): ?array
+/* ── JSON endpoints (api/) ── */
+
+/** Headers shared by the api/ endpoints; anything but POST gets a 405. */
+function api_start(): void
 {
-    $coupons = store_read('coupons');
-    $i = coupon_index($coupons, $code);
-    return $i !== null && $coupons[$i]['active'] ? $coupons[$i] : null;
+    header('Content-Type: application/json; charset=utf-8');
+    header('Cache-Control: no-store');
+    header('X-Content-Type-Options: nosniff');
+    header('X-Robots-Tag: noindex');
+    if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
+        header('Allow: POST');
+        json_response(405, ['error' => 'method_not_allowed']);
+    }
+}
+
+function json_response(int $status, array $body): void
+{
+    http_response_code($status);
+    echo json_encode($body, JSON_UNESCAPED_SLASHES);
+    exit;
 }
 
 /* ── Request helpers ── */

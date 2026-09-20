@@ -1,4 +1,2 @@
-# Created on the server, never committed: admin password hash and coupon data.
+# Created on the server, never committed: database credentials and admin password hash.
 includes/config.php
-data/*
-!data/.htaccess
