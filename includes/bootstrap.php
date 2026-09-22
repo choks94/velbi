@@ -68,12 +68,14 @@ function db(): PDO
 /** Creates the tables if they don't exist yet; safe to run on every admin request. */
 function db_ensure_schema(): void
 {
-    // valid_until is the last day a coupon can be used (inclusive); NULL means no end date.
+    // valid_from / valid_until are the first and last day a coupon can be used (inclusive);
+    // NULL means "from now on" and "no end date".
     db()->exec(sprintf(
         'CREATE TABLE IF NOT EXISTS coupons (
             id          INT UNSIGNED     NOT NULL AUTO_INCREMENT PRIMARY KEY,
             code        VARCHAR(32)      NOT NULL,
             percent     TINYINT UNSIGNED NOT NULL,
+            valid_from  DATE             NULL,
             valid_until DATE             NULL,
             active      TINYINT(1)       NOT NULL DEFAULT 1,
             created_at  DATETIME         NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -107,6 +109,19 @@ function db_ensure_schema(): void
             CONSTRAINT fk_orders_coupon FOREIGN KEY (coupon_id) REFERENCES coupons (id) ON DELETE SET NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci'
     );
+    // For installs whose coupons table predates the start date.
+    db_add_column_if_missing('coupons', 'valid_from', 'valid_from DATE NULL AFTER percent');
+}
+
+/** Adds a column to a table that was created before that column existed. */
+function db_add_column_if_missing(string $table, string $column, string $definition): void
+{
+    $stmt = db()->prepare('SELECT COUNT(*) FROM information_schema.columns
+                           WHERE table_schema = DATABASE() AND table_name = ? AND column_name = ?');
+    $stmt->execute([$table, $column]);
+    if ((int) $stmt->fetchColumn() === 0) {
+        db()->exec("ALTER TABLE `$table` ADD COLUMN $definition");
+    }
 }
 
 function db_is_duplicate(PDOException $e): bool
@@ -127,17 +142,23 @@ function coupon_code_is_valid(string $code): bool
 }
 
 /**
- * An active coupon as ['percent' => int, 'expired' => bool], or null. It counts as expired once
- * its valid_until day is over (shop time). The column collation is case-insensitive, so codes
- * typed in lowercase in phpMyAdmin still match.
+ * An active coupon as ['percent' => int, 'expired' => bool, 'not_started' => bool], or null.
+ * The valid_from / valid_until days count as usable themselves (shop time). The column collation
+ * is case-insensitive, so codes typed in lowercase in phpMyAdmin still match.
  */
 function coupon_lookup(string $code): ?array
 {
-    $stmt = db()->prepare('SELECT percent, valid_until IS NOT NULL AND valid_until < CURDATE() AS expired
+    $stmt = db()->prepare('SELECT percent,
+                                  valid_until IS NOT NULL AND valid_until < CURDATE() AS expired,
+                                  valid_from  IS NOT NULL AND valid_from  > CURDATE() AS not_started
                            FROM coupons WHERE code = ? AND active = 1 AND percent BETWEEN ? AND ?');
     $stmt->execute([$code, COUPON_MIN_PERCENT, COUPON_MAX_PERCENT]);
     $row = $stmt->fetch();
-    return $row === false ? null : ['percent' => (int) $row['percent'], 'expired' => (bool) $row['expired']];
+    return $row === false ? null : [
+        'percent'     => (int) $row['percent'],
+        'expired'     => (bool) $row['expired'],
+        'not_started' => (bool) $row['not_started'],
+    ];
 }
 
 /* ── JSON endpoints (api/) ── */
