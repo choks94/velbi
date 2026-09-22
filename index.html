@@ -1308,7 +1308,8 @@
             return false;
         }
         if (!result.valid) {
-            setCouponMsg(result.reason === 'expired' ? 'Ovaj kupon je istekao.' : 'Kupon kod nije važeći.', 'error');
+            const reasons = { expired: 'Ovaj kupon je istekao.', not_started: 'Ovaj kupon još ne važi.' };
+            setCouponMsg(reasons[result.reason] || 'Kupon kod nije važeći.', 'error');
             return false;
         }
         appliedCoupon = { code: result.code, percent: result.percent };

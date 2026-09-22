@@ -118,9 +118,22 @@ function handle_login(string $hash): void
     $_SESSION['csrf']  = bin2hex(random_bytes(32));
 }
 
+/** A date field as 'Y-m-d', '' when left empty, or null when it isn't a sensible date. */
+function date_field(string $name): ?string
+{
+    $value = trim(post_string($name));
+    if ($value === '') {
+        return '';
+    }
+    $date = DateTime::createFromFormat('!Y-m-d', $value);
+    $ok   = $date !== false && $date->format('Y-m-d') === $value && $value >= '2000-01-01' && $value <= '2099-12-31';
+    return $ok ? $value : null;
+}
+
 /**
- * Validated [code, percent, valid_until] from the form — valid_until is 'Y-m-d', or null for
- * "bez roka" — or null after flashing what's wrong. A new coupon can't start out already expired.
+ * Validated [code, percent, valid_from, valid_until] from the form — the dates are 'Y-m-d', or
+ * null for "od danas" / "bez roka" — or null after flashing what's wrong. A new coupon can't
+ * start out already expired.
  */
 function coupon_form_input(bool $isNew): ?array
 {
@@ -137,11 +150,17 @@ function coupon_form_input(bool $isNew): ?array
         return null;
     }
 
+    $validFrom = date_field('valid_from');
+    if ($validFrom === null) {
+        flash('error', 'Datum „Važi od“ nije ispravan. Ostavite polje prazno ako kupon važi odmah.');
+        return null;
+    }
+    $validFrom = $validFrom === '' ? null : $validFrom;
+
     $validUntil = null;
     if (post_string('no_expiry') !== '1') {
-        $validUntil = post_string('valid_until');
-        $date       = DateTime::createFromFormat('!Y-m-d', $validUntil);
-        if ($date === false || $date->format('Y-m-d') !== $validUntil || $validUntil < '2000-01-01' || $validUntil > '2099-12-31') {
+        $validUntil = date_field('valid_until');
+        if ($validUntil === null || $validUntil === '') {
             flash('error', 'Izaberite datum do kog kupon važi ili označite „bez roka“.');
             return null;
         }
@@ -150,13 +169,33 @@ function coupon_form_input(bool $isNew): ?array
             return null;
         }
     }
-    return [$code, $percent, $validUntil];
+    if ($validFrom !== null && $validUntil !== null && $validFrom > $validUntil) {
+        flash('error', 'Datum „Važi od“ mora biti pre datuma „Važi do“.');
+        return null;
+    }
+    return [$code, $percent, $validFrom, $validUntil];
 }
 
-/** "važi do 30.09.2026." or "bez roka važenja." for flash messages. */
-function validity_text(?string $validUntil): string
+/** "Važi od 01.10.2026. do 31.10.2026.", "Važi do …", "Važi od …" or "Bez roka važenja". */
+function validity_phrase(?string $validFrom, ?string $validUntil, string $verb = 'Važi'): string
 {
-    return $validUntil === null ? 'bez roka važenja.' : 'važi do ' . date_sr($validUntil);
+    if ($validFrom !== null && $validUntil !== null) {
+        return "$verb od " . date_sr($validFrom) . ' do ' . date_sr($validUntil);
+    }
+    if ($validUntil !== null) {
+        return "$verb do " . date_sr($validUntil);
+    }
+    if ($validFrom !== null) {
+        return "$verb od " . date_sr($validFrom);
+    }
+    return 'Bez roka važenja';
+}
+
+/** The same phrase as the tail of a flash message: lower case, always ending in a period. */
+function validity_sentence(?string $validFrom, ?string $validUntil): string
+{
+    $text = lcfirst(validity_phrase($validFrom, $validUntil));
+    return substr($text, -1) === '.' ? $text : $text . '.';
 }
 
 function coupon_code_by_id(int $id): ?string
@@ -173,9 +212,10 @@ function handle_create(): void
     if ($input === null) {
         return;
     }
-    [$code, $percent, $validUntil] = $input;
+    [$code, $percent, $validFrom, $validUntil] = $input;
     try {
-        db()->prepare('INSERT INTO coupons (code, percent, valid_until) VALUES (?, ?, ?)')->execute([$code, $percent, $validUntil]);
+        db()->prepare('INSERT INTO coupons (code, percent, valid_from, valid_until) VALUES (?, ?, ?, ?)')
+            ->execute([$code, $percent, $validFrom, $validUntil]);
     } catch (PDOException $e) {
         if (!db_is_duplicate($e)) {
             throw $e;
@@ -183,7 +223,7 @@ function handle_create(): void
         flash('error', "Kupon $code već postoji.");
         return;
     }
-    flash('ok', "Kupon $code (−$percent%) je dodat — " . validity_text($validUntil));
+    flash('ok', "Kupon $code (−$percent%) je dodat — " . validity_sentence($validFrom, $validUntil));
 }
 
 /** Returns the query string to redirect to — back into edit mode when the input was rejected. */
@@ -194,10 +234,10 @@ function handle_update(): string
     if ($input === null) {
         return "?edit=$id";
     }
-    [$code, $percent, $validUntil] = $input;
+    [$code, $percent, $validFrom, $validUntil] = $input;
     try {
-        $stmt = db()->prepare('UPDATE coupons SET code = ?, percent = ?, valid_until = ? WHERE id = ?');
-        $stmt->execute([$code, $percent, $validUntil, $id]);
+        $stmt = db()->prepare('UPDATE coupons SET code = ?, percent = ?, valid_from = ?, valid_until = ? WHERE id = ?');
+        $stmt->execute([$code, $percent, $validFrom, $validUntil, $id]);
     } catch (PDOException $e) {
         if (!db_is_duplicate($e)) {
             throw $e;
@@ -211,7 +251,7 @@ function handle_update(): string
         // Allowed on purpose (e.g. to end a promotion), but make sure it wasn't a typo.
         flash('ok', "Kupon $code je sačuvan, ali mu je rok važenja prošao (" . date_sr($validUntil) . ') — kupci ga više ne mogu koristiti.');
     } else {
-        flash('ok', "Kupon $code (−$percent%) je sačuvan — " . validity_text($validUntil));
+        flash('ok', "Kupon $code (−$percent%) je sačuvan — " . validity_sentence($validFrom, $validUntil));
     }
     return '';
 }
@@ -367,6 +407,13 @@ function coupon_fields(string $prefix, array $coupon): string
     </div>
     <div class="field-date">
         <div class="label-row">
+            <label for="<?= $prefix ?>valid_from">Važi od</label>
+            <span class="hint">prazno = odmah</span>
+        </div>
+        <input id="<?= $prefix ?>valid_from" name="valid_from" type="date" value="<?= h((string) ($coupon['valid_from'] ?? '')) ?>" max="2099-12-31">
+    </div>
+    <div class="field-date">
+        <div class="label-row">
             <label for="<?= $prefix ?>valid_until">Važi do</label>
             <label class="check"><input type="checkbox" name="no_expiry" value="1" data-toggles="<?= $prefix ?>valid_until"<?= $noExpiry ? ' checked' : '' ?>> bez roka</label>
         </div>
@@ -392,12 +439,13 @@ if ($loggedIn && !$dbError) {
     try {
         // Usage per coupon is lifetime and follows the coupon through renames (joined by id).
         $coupons = db()->query(
-            'SELECT c.id, c.code, c.percent, c.valid_until, c.active, c.created_at,
+            'SELECT c.id, c.code, c.percent, c.valid_from, c.valid_until, c.active, c.created_at,
                     c.valid_until IS NOT NULL AND c.valid_until < CURDATE() AS expired,
+                    c.valid_from  IS NOT NULL AND c.valid_from  > CURDATE() AS not_started,
                     COUNT(o.id) AS uses, COALESCE(SUM(o.discount), 0) AS discount,
                     COALESCE(SUM(o.total), 0) AS revenue, MAX(o.created_at) AS last_used
              FROM coupons c LEFT JOIN orders o ON o.coupon_id = c.id
-             GROUP BY c.id, c.code, c.percent, c.valid_until, c.active, c.created_at
+             GROUP BY c.id, c.code, c.percent, c.valid_from, c.valid_until, c.active, c.created_at
              ORDER BY c.id DESC'
         )->fetchAll();
         $stats = sales_stats($days === null ? null : date('Y-m-d 00:00:00', strtotime('-' . ($days - 1) . ' days')));
@@ -480,17 +528,18 @@ $csrfField = '<input type="hidden" name="csrf" value="' . h($_SESSION['csrf']) .
         .flash-error { background: #fbeae8; color: #a5281b; border: 1px solid #f1c9c4; }
 
         .login-form { display: grid; gap: 14px; margin-top: 18px; }
-        /* Add and edit forms: code · percent · valid until · buttons; two columns on narrow screens. */
-        .coupon-form { display: grid; grid-template-columns: 1fr 104px 180px auto; gap: 12px; align-items: end; width: 100%; margin-top: 18px; }
+        /* Add and edit forms: code · percent · valid from · valid until, buttons on their own row. */
+        .coupon-form { display: grid; grid-template-columns: 1fr 104px 158px 158px; gap: 12px; align-items: end; width: 100%; margin-top: 18px; }
         .coupon .coupon-form { margin-top: 0; }
-        .form-actions { display: flex; gap: 8px; }
+        .form-actions { display: flex; gap: 8px; grid-column: 1 / -1; justify-content: flex-end; }
         .form-actions .btn-small { padding: 11px 16px; }
         .label-row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
         .check { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 500; color: #7a5c4a; cursor: pointer; }
         .check input { margin: 0; accent-color: #A87C2A; }
+        .hint { font-size: 12px; color: #9a7a6a; }
         @media (max-width: 760px) {
             .coupon-form { grid-template-columns: 1fr 104px; }
-            .field-date, .form-actions { grid-column: 1 / -1; }
+            .field-date { grid-column: 1 / -1; }
             .form-actions .btn { flex: 1; }
         }
 
@@ -511,6 +560,7 @@ $csrfField = '<input type="hidden" name="csrf" value="' . h($_SESSION['csrf']) .
         .badge-on { background: #e8f5ea; color: #3f6445; }
         .badge-off { background: #F0E8DF; color: #7a5c4a; }
         .badge-expired { background: #fbeae8; color: #a5281b; }
+        .badge-soon { background: rgba(196,154,60,.16); color: #8C6328; }
         /* Long details wrap inside the text column; the buttons only drop below it on narrow screens. */
         .coupon-info { flex: 1 1 260px; min-width: 0; }
         .coupon-actions { display: flex; gap: 8px; }
@@ -678,11 +728,20 @@ $csrfField = '<input type="hidden" name="csrf" value="' . h($_SESSION['csrf']) .
                         $id      = (int) $coupon['id'];
                         $code    = (string) $coupon['code'];
                         $percent = (int) $coupon['percent'];
-                        $active  = (bool) $coupon['active'];
-                        $expired = (bool) $coupon['expired'];
-                        $uses    = (int) $coupon['uses'];
-                        // A switched-off coupon reads "Neaktivan" even if it has also expired.
-                        [$status, $badge] = !$active ? ['Neaktivan', 'badge-off'] : ($expired ? ['Istekao', 'badge-expired'] : ['Aktivan', 'badge-on']); ?>
+                        $active     = (bool) $coupon['active'];
+                        $expired    = (bool) $coupon['expired'];
+                        $notStarted = (bool) $coupon['not_started'];
+                        $uses       = (int) $coupon['uses'];
+                        // Switched off wins over the dates; otherwise the validity window decides.
+                        if (!$active) {
+                            [$status, $badge] = ['Neaktivan', 'badge-off'];
+                        } elseif ($expired) {
+                            [$status, $badge] = ['Istekao', 'badge-expired'];
+                        } elseif ($notStarted) {
+                            [$status, $badge] = ['Zakazan', 'badge-soon'];
+                        } else {
+                            [$status, $badge] = ['Aktivan', 'badge-on'];
+                        } ?>
                         <?php if ($id === $editId): ?>
                             <li class="coupon">
                                 <form method="post" class="coupon-form">
@@ -697,12 +756,12 @@ $csrfField = '<input type="hidden" name="csrf" value="' . h($_SESSION['csrf']) .
                                 </form>
                             </li>
                         <?php else: ?>
-                            <li class="coupon<?= $status === 'Aktivan' ? '' : ' inactive' ?>">
+                            <li class="coupon<?= !$active || $expired ? ' inactive' : '' ?>">
                                 <div class="coupon-info">
                                     <span class="coupon-code"><?= h($code) ?></span><span class="coupon-pct">−<?= $percent ?>%</span>
                                     <span class="badge <?= $badge ?>"><?= $status ?></span>
                                     <div class="coupon-meta">
-                                        <?= $coupon['valid_until'] === null ? 'Bez roka važenja' : ($expired ? 'Važio do ' : 'Važi do ') . date_sr((string) $coupon['valid_until']) ?>
+                                        <?= validity_phrase($coupon['valid_from'], $coupon['valid_until'], $expired ? 'Važio' : 'Važi') ?>
                                         · dodat <?= date_sr((string) $coupon['created_at']) ?><br>
                                         <?php if ($uses > 0): ?>
                                             Korišćenja: <strong><?= $uses ?></strong> · popust <?= din((int) $coupon['discount']) ?> · prihod <?= din((int) $coupon['revenue']) ?>

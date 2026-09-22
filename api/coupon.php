@@ -2,7 +2,8 @@
 /*
  * POST /api/coupon.php  (code=VELBI10)
  *   → {"valid": true, "code": "VELBI10", "percent": 10}
- *   → {"valid": false, "reason": "expired"}  (active, but past its end date)
+ *   → {"valid": false, "reason": "expired"}      (active, but past its end date)
+ *   → {"valid": false, "reason": "not_started"}  (active, but its start date hasn't come yet)
  *   → {"valid": false}
  *
  * Checks one code at a time, so the coupon list itself is never exposed.
@@ -28,6 +29,7 @@ try {
 if ($coupon === null) {
     json_response(200, ['valid' => false]);
 }
-json_response(200, $coupon['expired']
-    ? ['valid' => false, 'reason' => 'expired']
-    : ['valid' => true, 'code' => $code, 'percent' => $coupon['percent']]);
+if ($coupon['expired'] || $coupon['not_started']) {
+    json_response(200, ['valid' => false, 'reason' => $coupon['expired'] ? 'expired' : 'not_started']);
+}
+json_response(200, ['valid' => true, 'code' => $code, 'percent' => $coupon['percent']]);
